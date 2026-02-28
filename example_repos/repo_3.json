@@ -1,13 +1,15 @@
 {
-    "repository": {
-      "name": "supply_chain_demand_forecasting",
-      "location": "/opt/feast/supply_chain",
-      "defaultOwner": "Demand Planning Analytics Team",
-      "id": 3,
-      "description": "Supply chain demand forecasting and inventory optimization platform for retail and manufacturing. POPIA-compliant with minimal personal data (workforce only). Uses MSSQL (ERP transactions), MySQL (supplier portal), MongoDB (IoT sensor data), PostgreSQL (demand planning), and S3 (historical time-series). 4 entities: ProductSku, DistributionNode, Supplier, and DemandForecast. Supports ML models for demand prediction, stock optimization, and supplier risk assessment with full explainability for procurement decisions."
-    },
-    "nodes": [
-      ["source_1", {
+  "repository": {
+    "name": "supply_chain_demand_forecasting",
+    "location": "/opt/feast/supply_chain",
+    "defaultOwner": "Demand Planning Analytics Team",
+    "id": 3,
+    "description": "Supply chain demand forecasting and inventory optimization platform for retail and manufacturing. POPIA-compliant with minimal personal data (workforce only). Uses MSSQL (ERP transactions), MySQL (supplier portal), MongoDB (IoT sensor data), PostgreSQL (demand planning), and S3 (historical time-series). 4 entities: ProductSku, DistributionNode, Supplier, and DemandForecast. Supports ML models for demand prediction, stock optimization, and supplier risk assessment with full explainability for procurement decisions."
+  },
+  "nodes": [
+    [
+      "source_1",
+      {
         "id": "source_1",
         "type": "datasource",
         "name": "ERP Transactions SQL Server",
@@ -21,25 +23,42 @@
           "sparkPattern": "MS JDBC with change tracking for incremental loads"
         },
         "description": "Sales transactions, purchase orders, inventory movements, and financial postings",
-        "tags": ["transactional", "erp", "core", "non-pii"],
+        "tags": [
+          "transactional",
+          "erp",
+          "core",
+          "non-pii"
+        ],
         "ownedBy": "ERP Data Team",
         "accessProcess": "1. Business justification to Supply Chain Director\n2. Data steward approval\n3. SQL Server read-only replica\n4. Quarterly data quality review",
         "details": {
           "connection": "sqlserver://erp.internal:1433/SupplyChainDB",
           "notes": "Debezium CDC for real-time inventory\nChange tracking: Incremental ETL\nData: Product and operational only, no consumer PII\nRetention: 7 years for financial audit\nEncryption: TDE standard"
         },
-        "x": 100, "y": 100,
-        "inputs": [], "outputs": [],
+        "x": 100,
+        "y": 100,
+        "inputs": [],
+        "outputs": [],
         "createdAt": "2026-02-28T08:00:00Z",
         "debeziumAvailable": true,
         "sparkPattern": "MS JDBC with change tracking for incremental loads",
         "columnSecurity": {
-          "piiColumns": ["employee_id_posted", "cost_center_owner"],
-          "maskedColumns": ["employee_id_posted"],
-          "restrictedColumns": ["salary_related_costs"]
+          "piiColumns": [
+            "employee_id_posted",
+            "cost_center_owner"
+          ],
+          "maskedColumns": [
+            "employee_id_posted"
+          ],
+          "restrictedColumns": [
+            "salary_related_costs"
+          ]
         }
-      }],
-      ["source_2", {
+      }
+    ],
+    [
+      "source_2",
+      {
         "id": "source_2",
         "type": "datasource",
         "name": "Supplier Portal MySQL",
@@ -53,25 +72,42 @@
           "sparkPattern": "JDBC with SSL and connection pooling"
         },
         "description": "Supplier master data, performance ratings, and contract information",
-        "tags": ["supplier", "procurement", "third-party"],
+        "tags": [
+          "supplier",
+          "procurement",
+          "third-party"
+        ],
         "ownedBy": "Procurement Systems Team",
         "accessProcess": "1. Procurement Director authorization\n2. Supplier confidentiality agreement check\n3. MySQL read replica access\n4. Vendor data handling training",
         "details": {
           "connection": "mysql://suppliers.internal:3306/procurement",
           "notes": "Debezium for supplier status changes\nSupplier data: Commercial confidentiality\nPOPIA: Minimal - only contact persons (workforce)\nRetention: Contract duration + 5 years\nPerformance: Ratings aggregated"
         },
-        "x": 100, "y": 250,
-        "inputs": [], "outputs": [],
+        "x": 100,
+        "y": 250,
+        "inputs": [],
+        "outputs": [],
         "createdAt": "2026-02-28T08:00:00Z",
         "debeziumAvailable": true,
         "sparkPattern": "JDBC with SSL and connection pooling",
         "columnSecurity": {
-          "piiColumns": ["supplier_contact_email", "contact_phone"],
-          "maskedColumns": ["supplier_contact_email", "contact_phone"],
-          "restrictedColumns": ["contract_pricing_tiers"]
+          "piiColumns": [
+            "supplier_contact_email",
+            "contact_phone"
+          ],
+          "maskedColumns": [
+            "supplier_contact_email",
+            "contact_phone"
+          ],
+          "restrictedColumns": [
+            "contract_pricing_tiers"
+          ]
         }
-      }],
-      ["source_3", {
+      }
+    ],
+    [
+      "source_3",
+      {
         "id": "source_3",
         "type": "datasource",
         "name": "IoT Sensor MongoDB",
@@ -85,15 +121,22 @@
           "sparkPattern": "MongoDB Spark connector with time-series aggregation"
         },
         "description": "Warehouse IoT sensors, cold chain monitoring, and equipment telemetry",
-        "tags": ["iot", "sensor", "real-time", "operational"],
+        "tags": [
+          "iot",
+          "sensor",
+          "real-time",
+          "operational"
+        ],
         "ownedBy": "IoT Platform Team",
         "accessProcess": "1. Operations technology approval\n2. Data retention policy acknowledgment\n3. MongoDB time-series access\n4. Equipment data use agreement",
         "details": {
           "connection": "mongodb://iot.internal:27017/sensor_data",
           "notes": "Time-series collections with TTL\nChange streams for anomaly alerts\nData: Equipment only, no personal\nRetention: 90 days raw, 2 years aggregated\nCompression: Time-series compression enabled"
         },
-        "x": 100, "y": 400,
-        "inputs": [], "outputs": [],
+        "x": 100,
+        "y": 400,
+        "inputs": [],
+        "outputs": [],
         "createdAt": "2026-02-28T08:00:00Z",
         "debeziumAvailable": true,
         "sparkPattern": "MongoDB Spark connector with time-series aggregation",
@@ -102,8 +145,11 @@
           "maskedColumns": [],
           "restrictedColumns": []
         }
-      }],
-      ["source_4", {
+      }
+    ],
+    [
+      "source_4",
+      {
         "id": "source_4",
         "type": "datasource",
         "name": "Demand Planning PostgreSQL",
@@ -117,25 +163,41 @@
           "sparkPattern": "JDBC with row-level security for planning regions"
         },
         "description": "Demand forecasts, planning scenarios, and statistical baseline data",
-        "tags": ["planning", "forecast", "statistical", "non-pii"],
+        "tags": [
+          "planning",
+          "forecast",
+          "statistical",
+          "non-pii"
+        ],
         "ownedBy": "Demand Planning Team",
         "accessProcess": "1. Planning Director approval\n2. Forecast sensitivity review\n3. PostgreSQL RLS for region\n4. Data quality SLA agreement",
         "details": {
           "connection": "postgresql://planning.internal:5432/demand",
           "notes": "Row-level security: Planning regions\nDebezium: Forecast version tracking\nData: Aggregated product demand\nRetention: 3 years planning history\nValidation: Statistical accuracy tracked"
         },
-        "x": 100, "y": 550,
-        "inputs": [], "outputs": [],
+        "x": 100,
+        "y": 550,
+        "inputs": [],
+        "outputs": [],
         "createdAt": "2026-02-28T08:00:00Z",
         "debeziumAvailable": true,
         "sparkPattern": "JDBC with row-level security for planning regions",
         "columnSecurity": {
-          "piiColumns": ["planner_id"],
-          "maskedColumns": ["planner_id"],
-          "restrictedColumns": ["unpublished_forecasts"]
+          "piiColumns": [
+            "planner_id"
+          ],
+          "maskedColumns": [
+            "planner_id"
+          ],
+          "restrictedColumns": [
+            "unpublished_forecasts"
+          ]
         }
-      }],
-      ["source_5", {
+      }
+    ],
+    [
+      "source_5",
+      {
         "id": "source_5",
         "type": "datasource",
         "name": "Time Series Archive S3",
@@ -149,210 +211,425 @@
           "sparkPattern": "S3A with Parquet and partition pruning"
         },
         "description": "Historical time-series data for demand forecasting model training",
-        "tags": ["historical", "time-series", "training", "archive"],
+        "tags": [
+          "historical",
+          "time-series",
+          "training",
+          "archive"
+        ],
         "ownedBy": "Data Science Platform Team",
         "accessProcess": "1. Analytics use case approval\n2. Data lake governance review\n3. S3 IAM role with conditions\n4. Model lineage registration",
         "details": {
           "connection": "s3://supply-chain-lake/time-series/",
           "notes": "Partitioned: year/month/product_category\nFormat: Parquet with Snappy\nRetention: 5 years for model training\nLineage: Tracked via MLflow\nAccess: VPC endpoint, no public"
         },
-        "x": 100, "y": 700,
-        "inputs": [], "outputs": [],
+        "x": 100,
+        "y": 700,
+        "inputs": [],
+        "outputs": [],
         "createdAt": "2026-02-28T08:00:00Z",
         "debeziumAvailable": false,
         "sparkPattern": "S3A with Parquet and partition pruning",
         "columnSecurity": {
           "piiColumns": [],
           "maskedColumns": [],
-          "restrictedColumns": ["raw_sales_by_customer"]
+          "restrictedColumns": [
+            "raw_sales_by_customer"
+          ]
         }
-      }],
-      ["entity_1", {
+      }
+    ],
+    [
+      "entity_1",
+      {
         "id": "entity_1",
         "type": "entity",
         "name": "ProductSku",
         "joinKey": "sku_code",
         "description": "Product stock keeping units with category and attribute hierarchy",
-        "tags": ["core", "product", "master-data"],
+        "tags": [
+          "core",
+          "product",
+          "master-data"
+        ],
         "details": {
           "notes": "SKU hierarchy: Category > Subcategory > SKU\nAttributes: Weight, dimensions, shelf life\nVelocity: ABC/XYZ classification\nSeasonality: Pattern classification\nNo PII: Product master data only"
         },
-        "x": 400, "y": 100,
+        "x": 400,
+        "y": 100,
         "inputs": [],
-        "outputs": ["fv_1", "fv_4"],
+        "outputs": [
+          "fv_1",
+          "fv_4"
+        ],
         "createdAt": "2026-02-28T08:00:00Z"
-      }],
-      ["entity_2", {
+      }
+    ],
+    [
+      "entity_2",
+      {
         "id": "entity_2",
         "type": "entity",
         "name": "DistributionNode",
         "joinKey": "node_code",
         "description": "Warehouses, distribution centers, and retail stores in network",
-        "tags": ["location", "network", "operational"],
+        "tags": [
+          "location",
+          "network",
+          "operational"
+        ],
         "details": {
           "notes": "Node types: DC, Warehouse, Store, Hub\nNetwork: Topology and transit times\nCapacity: Storage and throughput constraints\nRegion: Geographic classification\nOperational: No personal data"
         },
-        "x": 400, "y": 250,
+        "x": 400,
+        "y": 250,
         "inputs": [],
-        "outputs": ["fv_2", "fv_3"],
+        "outputs": [
+          "fv_2",
+          "fv_3"
+        ],
         "createdAt": "2026-02-28T08:00:00Z"
-      }],
-      ["entity_3", {
+      }
+    ],
+    [
+      "entity_3",
+      {
         "id": "entity_3",
         "type": "entity",
         "name": "Supplier",
         "joinKey": "supplier_code",
         "description": "External suppliers and vendors with performance metrics",
-        "tags": ["supplier", "procurement", "third-party"],
+        "tags": [
+          "supplier",
+          "procurement",
+          "third-party"
+        ],
         "details": {
           "notes": "Supplier tiers: Strategic, Preferred, Transactional\nPerformance: Aggregated KPIs only\nRisk: Supply disruption indicators\nContracts: Commercial terms (not PII)\nContacts: Workforce data only, POPIA minimal"
         },
-        "x": 400, "y": 400,
+        "x": 400,
+        "y": 400,
         "inputs": [],
-        "outputs": ["fv_3"],
+        "outputs": [
+          "fv_3"
+        ],
         "createdAt": "2026-02-28T08:00:00Z"
-      }],
-      ["entity_4", {
+      }
+    ],
+    [
+      "entity_4",
+      {
         "id": "entity_4",
         "type": "entity",
         "name": "DemandForecast",
         "joinKey": "forecast_id",
         "description": "Statistical demand forecasts and planning scenarios",
-        "tags": ["forecast", "statistical", "planning", "ml-target"],
+        "tags": [
+          "forecast",
+          "statistical",
+          "planning",
+          "ml-target"
+        ],
         "details": {
           "notes": "Forecast levels: SKU/Node/Week\nScenarios: Baseline, Optimistic, Pessimistic\nAccuracy: WAPE, Bias, MAPE tracked\nVersions: Forecast revision history\nTarget variable: Unit demand"
         },
-        "x": 400, "y": 550,
+        "x": 400,
+        "y": 550,
         "inputs": [],
-        "outputs": ["fv_4", "fv_5"],
+        "outputs": [
+          "fv_4",
+          "fv_5"
+        ],
         "createdAt": "2026-02-28T08:00:00Z"
-      }],
-      ["fv_1", {
+      }
+    ],
+    [
+      "fv_1",
+      {
         "id": "fv_1",
         "type": "featureview",
         "name": "ProductDemandProfile",
         "subtype": "batch",
         "description": "Product demand patterns and seasonality features",
-        "tags": ["demand", "seasonality", "product", "forecasting"],
-        "entities": ["entity_1"],
+        "tags": [
+          "demand",
+          "seasonality",
+          "product",
+          "forecasting"
+        ],
+        "entities": [
+          "entity_1"
+        ],
         "features": [
-          {"name": "demand_velocity_class", "type": "String"},
-          {"name": "seasonality_strength_index", "type": "Float32"},
-          {"name": "trend_direction", "type": "String"},
-          {"name": "price_elasticity_band", "type": "String"},
-          {"name": "substitution_risk_score", "type": "Float32"}
+          {
+            "name": "demand_velocity_class",
+            "type": "String"
+          },
+          {
+            "name": "seasonality_strength_index",
+            "type": "Float32"
+          },
+          {
+            "name": "trend_direction",
+            "type": "String"
+          },
+          {
+            "name": "price_elasticity_band",
+            "type": "String"
+          },
+          {
+            "name": "substitution_risk_score",
+            "type": "Float32"
+          }
         ],
         "details": {
           "ttl": "86400",
           "notes": "Source: SQL Server ERP + S3 history\nClassification: ABC/XYZ demand patterns\nSeasonality: Decomposition features\nElasticity: Price sensitivity estimates\nNo PII: Product attributes only"
         },
-        "x": 700, "y": 100,
-        "inputs": ["entity_1"],
-        "outputs": ["service_1", "service_2"],
+        "x": 700,
+        "y": 100,
+        "inputs": [
+          "entity_1"
+        ],
+        "outputs": [
+          "service_1",
+          "service_2"
+        ],
         "createdAt": "2026-02-28T08:00:00Z"
-      }],
-      ["fv_2", {
+      }
+    ],
+    [
+      "fv_2",
+      {
         "id": "fv_2",
         "type": "featureview",
         "name": "NodeOperationalFeatures",
         "subtype": "batch",
         "description": "Distribution node operational capacity and constraints",
-        "tags": ["operational", "capacity", "constraints", "network"],
-        "entities": ["entity_2"],
+        "tags": [
+          "operational",
+          "capacity",
+          "constraints",
+          "network"
+        ],
+        "entities": [
+          "entity_2"
+        ],
         "features": [
-          {"name": "current_utilization_rate", "type": "Float32"},
-          {"name": "capacity_constraint_flag", "type": "Bool"},
-          {"name": "inbound_lead_time_days", "type": "Float32"},
-          {"name": "outbound_lead_time_days", "type": "Float32"},
-          {"name": "seasonal_capacity_factor", "type": "Float32"}
+          {
+            "name": "current_utilization_rate",
+            "type": "Float32"
+          },
+          {
+            "name": "capacity_constraint_flag",
+            "type": "Bool"
+          },
+          {
+            "name": "inbound_lead_time_days",
+            "type": "Float32"
+          },
+          {
+            "name": "outbound_lead_time_days",
+            "type": "Float32"
+          },
+          {
+            "name": "seasonal_capacity_factor",
+            "type": "Float32"
+          }
         ],
         "details": {
           "ttl": "14400",
           "notes": "Source: SQL Server ERP + IoT sensors\nRefresh: Every 4 hours\nCapacity: Storage and throughput\nLead times: Statistical averages\nConstraints: Hard and soft limits"
         },
-        "x": 700, "y": 250,
-        "inputs": ["entity_2"],
-        "outputs": ["service_1"],
+        "x": 700,
+        "y": 250,
+        "inputs": [
+          "entity_2"
+        ],
+        "outputs": [
+          "service_1"
+        ],
         "createdAt": "2026-02-28T08:00:00Z"
-      }],
-      ["fv_3", {
+      }
+    ],
+    [
+      "fv_3",
+      {
         "id": "fv_3",
         "type": "featureview",
         "name": "SupplierRiskFeatures",
         "subtype": "batch",
         "description": "Supplier performance and supply risk indicators",
-        "tags": ["supplier", "risk", "procurement", "third-party"],
-        "entities": ["entity_3"],
+        "tags": [
+          "supplier",
+          "risk",
+          "procurement",
+          "third-party"
+        ],
+        "entities": [
+          "entity_3"
+        ],
         "features": [
-          {"name": "supplier_tier", "type": "String"},
-          {"name": "ontime_delivery_rate", "type": "Float32"},
-          {"name": "quality_defect_rate", "type": "Float32"},
-          {"name": "financial_stability_score", "type": "Float32"},
-          {"name": "geopolitical_risk_band", "type": "String"}
+          {
+            "name": "supplier_tier",
+            "type": "String"
+          },
+          {
+            "name": "ontime_delivery_rate",
+            "type": "Float32"
+          },
+          {
+            "name": "quality_defect_rate",
+            "type": "Float32"
+          },
+          {
+            "name": "financial_stability_score",
+            "type": "Float32"
+          },
+          {
+            "name": "geopolitical_risk_band",
+            "type": "String"
+          }
         ],
         "details": {
           "ttl": "604800",
           "notes": "Source: MySQL supplier portal\nAggregation: 12-month rolling averages\nRisk: External data enrichment\nPOPIA: Only commercial data, minimal workforce\nRefresh: Weekly supplier updates"
         },
-        "x": 700, "y": 400,
-        "inputs": ["entity_3"],
-        "outputs": ["service_1"],
+        "x": 700,
+        "y": 400,
+        "inputs": [
+          "entity_3"
+        ],
+        "outputs": [
+          "service_1"
+        ],
         "createdAt": "2026-02-28T08:00:00Z"
-      }],
-      ["fv_4", {
+      }
+    ],
+    [
+      "fv_4",
+      {
         "id": "fv_4",
         "type": "featureview",
         "name": "ForecastAccuracyFeatures",
         "subtype": "batch",
         "description": "Historical forecast accuracy and bias correction features",
-        "tags": ["forecast", "accuracy", "bias", "ml-features"],
-        "entities": ["entity_1", "entity_4"],
+        "tags": [
+          "forecast",
+          "accuracy",
+          "bias",
+          "ml-features"
+        ],
+        "entities": [
+          "entity_1",
+          "entity_4"
+        ],
         "features": [
-          {"name": "historical_wape", "type": "Float32"},
-          {"name": "bias_direction", "type": "String"},
-          {"name": "forecast_revision_count", "type": "Int64"},
-          {"name": "promotional_lift_factor", "type": "Float32"},
-          {"name": "external_event_impact", "type": "Float32"}
+          {
+            "name": "historical_wape",
+            "type": "Float32"
+          },
+          {
+            "name": "bias_direction",
+            "type": "String"
+          },
+          {
+            "name": "forecast_revision_count",
+            "type": "Int64"
+          },
+          {
+            "name": "promotional_lift_factor",
+            "type": "Float32"
+          },
+          {
+            "name": "external_event_impact",
+            "type": "Float32"
+          }
         ],
         "details": {
           "ttl": "86400",
           "notes": "Source: PostgreSQL planning + S3 history\nAccuracy: WAPE, MAPE, Bias metrics\nRevisions: Forecast version tracking\nEvents: Calendar and external factors\nTarget: Demand forecast error correction"
         },
-        "x": 700, "y": 550,
-        "inputs": ["entity_1", "entity_4"],
-        "outputs": ["service_2"],
+        "x": 700,
+        "y": 550,
+        "inputs": [
+          "entity_1",
+          "entity_4"
+        ],
+        "outputs": [
+          "service_2"
+        ],
         "createdAt": "2026-02-28T08:00:00Z"
-      }],
-      ["fv_5", {
+      }
+    ],
+    [
+      "fv_5",
+      {
         "id": "fv_5",
         "type": "featureview",
         "name": "IoTSensorFeatures",
         "subtype": "stream",
         "description": "Real-time IoT sensor features for operational optimization",
-        "tags": ["iot", "real-time", "operational", "sensor"],
-        "entities": ["entity_2"],
+        "tags": [
+          "iot",
+          "real-time",
+          "operational",
+          "sensor"
+        ],
+        "entities": [
+          "entity_2"
+        ],
         "features": [
-          {"name": "warehouse_temperature_status", "type": "String"},
-          {"name": "equipment_health_score", "type": "Float32"},
-          {"name": "energy_consumption_anomaly", "type": "Bool"},
-          {"name": "space_utilization_realtime", "type": "Float32"}
+          {
+            "name": "warehouse_temperature_status",
+            "type": "String"
+          },
+          {
+            "name": "equipment_health_score",
+            "type": "Float32"
+          },
+          {
+            "name": "energy_consumption_anomaly",
+            "type": "Bool"
+          },
+          {
+            "name": "space_utilization_realtime",
+            "type": "Float32"
+          }
         ],
         "details": {
           "ttl": "3600",
           "notes": "Source: MongoDB IoT time-series\nLatency: 5-minute aggregation\nAnomaly: Statistical process control\nOptimization: Real-time capacity planning\nNo PII: Equipment sensors only"
         },
-        "x": 700, "y": 700,
-        "inputs": ["entity_2"],
-        "outputs": ["service_2"],
+        "x": 700,
+        "y": 700,
+        "inputs": [
+          "entity_2"
+        ],
+        "outputs": [
+          "service_2"
+        ],
         "createdAt": "2026-02-28T08:00:00Z"
-      }],
-      ["service_1", {
+      }
+    ],
+    [
+      "service_1",
+      {
         "id": "service_1",
         "type": "service",
         "name": "DemandForecastingModelTraining",
         "description": "Training data service for statistical and ML demand forecasting",
-        "tags": ["forecasting", "demand-planning", "ml-training", "explainable"],
-        "features": ["fv_1", "fv_2", "fv_3"],
+        "tags": [
+          "forecasting",
+          "demand-planning",
+          "ml-training",
+          "explainable"
+        ],
+        "features": [
+          "fv_1",
+          "fv_2",
+          "fv_3"
+        ],
         "featureServices": [],
         "details": {
           "usedBy": [
@@ -373,18 +650,35 @@
           ],
           "notes": "Purpose: Demand prediction and inventory optimization\nExplainability: Feature importance for planning explainability\nAccuracy: WAPE and bias monitoring\nHierarchy: SKU, Category, Aggregate levels\nNo PII: Product and operational data only\nGovernance: Supply chain data stewardship"
         },
-        "x": 1000, "y": 300,
-        "inputs": ["fv_1", "fv_2", "fv_3"],
+        "x": 1000,
+        "y": 300,
+        "inputs": [
+          "fv_1",
+          "fv_2",
+          "fv_3"
+        ],
         "outputs": [],
         "createdAt": "2026-02-28T08:00:00Z"
-      }],
-      ["service_2", {
+      }
+    ],
+    [
+      "service_2",
+      {
         "id": "service_2",
         "type": "service",
         "name": "OperationalOptimizationTraining",
         "description": "ML training data for warehouse operations and network optimization",
-        "tags": ["operations", "optimization", "iot", "real-time"],
-        "features": ["fv_1", "fv_4", "fv_5"],
+        "tags": [
+          "operations",
+          "optimization",
+          "iot",
+          "real-time"
+        ],
+        "features": [
+          "fv_1",
+          "fv_4",
+          "fv_5"
+        ],
         "featureServices": [],
         "details": {
           "usedBy": [
@@ -405,26 +699,92 @@
           ],
           "notes": "Purpose: Operational efficiency and automation\nData: IoT sensors, forecasts, and capacity\nReal-time: Streaming sensor features\nOptimization: Linear programming and heuristics\nExplainability: Operational decision transparency\nPOPIA: Minimal - only workforce contacts in suppliers"
         },
-        "x": 1000, "y": 600,
-        "inputs": ["fv_1", "fv_4", "fv_5"],
+        "x": 1000,
+        "y": 600,
+        "inputs": [
+          "fv_1",
+          "fv_4",
+          "fv_5"
+        ],
         "outputs": [],
         "createdAt": "2026-02-28T08:00:00Z"
-      }]
-    ],
-    "edges": [
-      {"from": "entity_1", "to": "fv_1", "id": "entity_1->fv_1", "animated": false},
-      {"from": "entity_1", "to": "fv_4", "id": "entity_1->fv_4", "animated": false},
-      {"from": "entity_2", "to": "fv_2", "id": "entity_2->fv_2", "animated": false},
-      {"from": "entity_2", "to": "fv_5", "id": "entity_2->fv_5", "animated": false},
-      {"from": "entity_3", "to": "fv_3", "id": "entity_3->fv_3", "animated": false},
-      {"from": "entity_4", "to": "fv_4", "id": "entity_4->fv_4", "animated": false},
-      {"from": "fv_1", "to": "service_1", "id": "fv_1->service_1", "animated": false},
-      {"from": "fv_1", "to": "service_2", "id": "fv_1->service_2", "animated": false},
-      {"from": "fv_2", "to": "service_1", "id": "fv_2->service_1", "animated": false},
-      {"from": "fv_3", "to": "service_1", "id": "fv_3->service_1", "animated": false},
-      {"from": "fv_4", "to": "service_2", "id": "fv_4->service_2", "animated": false},
-      {"from": "fv_5", "to": "service_2", "id": "fv_5->service_2", "animated": false}
-    ],
-    "exportDate": "2026-02-28T10:00:00Z",
-    "version": "3.0"
-  }
+      }
+    ]
+  ],
+  "edges": [
+    {
+      "from": "entity_1",
+      "to": "fv_1",
+      "id": "entity_1->fv_1",
+      "animated": false
+    },
+    {
+      "from": "entity_1",
+      "to": "fv_4",
+      "id": "entity_1->fv_4",
+      "animated": false
+    },
+    {
+      "from": "entity_2",
+      "to": "fv_2",
+      "id": "entity_2->fv_2",
+      "animated": false
+    },
+    {
+      "from": "entity_2",
+      "to": "fv_5",
+      "id": "entity_2->fv_5",
+      "animated": false
+    },
+    {
+      "from": "entity_3",
+      "to": "fv_3",
+      "id": "entity_3->fv_3",
+      "animated": false
+    },
+    {
+      "from": "entity_4",
+      "to": "fv_4",
+      "id": "entity_4->fv_4",
+      "animated": false
+    },
+    {
+      "from": "fv_1",
+      "to": "service_1",
+      "id": "fv_1->service_1",
+      "animated": false
+    },
+    {
+      "from": "fv_1",
+      "to": "service_2",
+      "id": "fv_1->service_2",
+      "animated": false
+    },
+    {
+      "from": "fv_2",
+      "to": "service_1",
+      "id": "fv_2->service_1",
+      "animated": false
+    },
+    {
+      "from": "fv_3",
+      "to": "service_1",
+      "id": "fv_3->service_1",
+      "animated": false
+    },
+    {
+      "from": "fv_4",
+      "to": "service_2",
+      "id": "fv_4->service_2",
+      "animated": false
+    },
+    {
+      "from": "fv_5",
+      "to": "service_2",
+      "id": "fv_5->service_2",
+      "animated": false
+    }
+  ],
+  "exportDate": "2026-02-28T10:00:00Z",
+  "version": "3.0"
+}
