@@ -1,10 +1,9 @@
 {
   "repository": {
-    "name": "water_treatment_ml_platform",
-    "location": "/opt/feast/water_treatment",
-    "defaultOwner": "Environmental Analytics Team",
-    "id": 1,
-    "description": "Water treatment process optimization and quality prediction platform for municipal and industrial water facilities. POPIA-compliant with minimal personal data (facility operators only). Uses MSSQL (SCADA process control), MySQL (chemical inventory), MongoDB (sensor telemetry), PostgreSQL (compliance reporting), and S3 (historical process data). 4 entities: TreatmentUnit, WaterSource, ChemicalBatch, and QualitySample. Supports ML models for process optimization, predictive maintenance, contaminant detection, and regulatory compliance forecasting with full explainability for engineering decisions."
+    "name": "supply_chain_demand_forecasting",
+    "location": "/opt/feast/supply_chain",
+    "defaultOwner": "Demand Planning Analytics Team",
+    "description": "Supply chain demand forecasting and inventory optimization platform for retail and manufacturing. POPIA-compliant with minimal personal data (workforce only). Uses MSSQL (ERP transactions), MySQL (supplier portal), MongoDB (IoT sensor data), PostgreSQL (demand planning), and S3 (historical time-series). 4 entities: ProductSku, DistributionNode, Supplier, and DemandForecast. Supports ML models for demand prediction, stock optimization, and supplier risk assessment with full explainability for procurement decisions."
   },
   "nodes": [
     [
@@ -12,47 +11,46 @@
       {
         "id": "source_1",
         "type": "datasource",
-        "name": "SCADA Process Control SQL Server",
+        "name": "ERP Transactions SQL Server",
         "kind": "sqlserver",
         "dbType": {
           "name": "SQL Server",
           "category": "Relational",
           "debezium": true,
           "icon": "🗃️",
-          "defaultProcess": "Process engineering data access request",
-          "sparkPattern": "MS JDBC with time-series extensions for process data"
+          "defaultProcess": "Supply chain data steward approval",
+          "sparkPattern": "MS JDBC with change tracking for incremental loads"
         },
-        "description": "Real-time process control data, pump states, valve positions, and flow rates from treatment plant SCADA",
+        "description": "Sales transactions, purchase orders, inventory movements, and financial postings",
         "tags": [
-          "scada",
-          "process-control",
-          "operational",
-          "critical"
+          "transactional",
+          "erp",
+          "core",
+          "non-pii"
         ],
-        "ownedBy": "Process Engineering Team",
-        "accessProcess": "1. Process engineer authorization\n2. Safety and operational risk review\n3. SQL Server read-only replica with audit\n4. Data historian access certification",
+        "ownedBy": "ERP Data Team",
+        "accessProcess": "1. Business justification to Supply Chain Director\n2. Data steward approval\n3. SQL Server read-only replica\n4. Quarterly data quality review",
         "details": {
-          "connection": "sqlserver://scada.water.local:1433/ProcessHistorian",
-          "notes": "Debezium CDC for real-time process alerts\nTime-series: Process data historian\nSafety: Critical infrastructure protection\nRetention: 10 years for regulatory compliance\nEncryption: TDE + column-level for setpoints"
+          "connection": "sqlserver://erp.internal:1433/SupplyChainDB",
+          "notes": "Debezium CDC for real-time inventory\nChange tracking: Incremental ETL\nData: Product and operational only, no consumer PII\nRetention: 7 years for financial audit\nEncryption: TDE standard"
         },
-        "x": 120,
-        "y": 680,
+        "x": 100,
+        "y": 100,
         "inputs": [],
         "outputs": [],
-        "createdAt": "2026-03-01T08:00:00Z",
+        "createdAt": "2026-02-28T08:00:00Z",
         "debeziumAvailable": true,
-        "sparkPattern": "MS JDBC with time-series extensions for process data",
+        "sparkPattern": "MS JDBC with change tracking for incremental loads",
         "columnSecurity": {
           "piiColumns": [
-            "operator_id",
-            "shift_supervisor"
+            "employee_id_posted",
+            "cost_center_owner"
           ],
           "maskedColumns": [
-            "operator_id"
+            "employee_id_posted"
           ],
           "restrictedColumns": [
-            "security_system_codes",
-            "emergency_shutdown_protocols"
+            "salary_related_costs"
           ]
         }
       }
@@ -62,47 +60,46 @@
       {
         "id": "source_2",
         "type": "datasource",
-        "name": "Chemical Inventory MySQL",
+        "name": "Supplier Portal MySQL",
         "kind": "mysql",
         "dbType": {
           "name": "MySQL",
           "category": "Relational",
           "debezium": true,
           "icon": "🐬",
-          "defaultProcess": "Environmental compliance officer approval",
-          "sparkPattern": "JDBC with SSL and chemical handling audit trail"
+          "defaultProcess": "Procurement data access request",
+          "sparkPattern": "JDBC with SSL and connection pooling"
         },
-        "description": "Chemical dosing records, inventory levels, safety data sheets, and consumption tracking",
+        "description": "Supplier master data, performance ratings, and contract information",
         "tags": [
-          "chemical",
-          "inventory",
-          "safety",
-          "compliance"
+          "supplier",
+          "procurement",
+          "third-party"
         ],
-        "ownedBy": "Environmental Compliance Team",
-        "accessProcess": "1. Environmental compliance officer approval\n2. Chemical handling safety verification\n3. MySQL read replica with SSL\n4. SDS (Safety Data Sheet) access training",
+        "ownedBy": "Procurement Systems Team",
+        "accessProcess": "1. Procurement Director authorization\n2. Supplier confidentiality agreement check\n3. MySQL read replica access\n4. Vendor data handling training",
         "details": {
-          "connection": "mysql://chemicals.water.local:3306/inventory",
-          "notes": "Debezium for low-stock alerts\nSafety: Hazardous material tracking\nCompliance: SANS 10228 chemical classification\nRetention: 15 years for environmental audit\nAggregation: Batch-level consumption only"
+          "connection": "mysql://suppliers.internal:3306/procurement",
+          "notes": "Debezium for supplier status changes\nSupplier data: Commercial confidentiality\nPOPIA: Minimal - only contact persons (workforce)\nRetention: Contract duration + 5 years\nPerformance: Ratings aggregated"
         },
-        "x": 120,
-        "y": 820,
+        "x": 100,
+        "y": 250,
         "inputs": [],
         "outputs": [],
-        "createdAt": "2026-03-01T08:00:00Z",
+        "createdAt": "2026-02-28T08:00:00Z",
         "debeziumAvailable": true,
-        "sparkPattern": "JDBC with SSL and chemical handling audit trail",
+        "sparkPattern": "JDBC with SSL and connection pooling",
         "columnSecurity": {
           "piiColumns": [
-            "supplier_contact",
-            "delivery_driver_ref"
+            "supplier_contact_email",
+            "contact_phone"
           ],
           "maskedColumns": [
-            "supplier_contact"
+            "supplier_contact_email",
+            "contact_phone"
           ],
           "restrictedColumns": [
-            "hazardous_material_locations",
-            "security_stock_levels"
+            "contract_pricing_tiers"
           ]
         }
       }
@@ -112,36 +109,36 @@
       {
         "id": "source_3",
         "type": "datasource",
-        "name": "Sensor Telemetry MongoDB",
+        "name": "IoT Sensor MongoDB",
         "kind": "mongodb",
         "dbType": {
           "name": "MongoDB",
           "category": "NoSQL",
           "debezium": true,
           "icon": "🍃",
-          "defaultProcess": "Instrumentation team data access",
-          "sparkPattern": "MongoDB Spark connector with time-series collections"
+          "defaultProcess": "IoT platform team access request",
+          "sparkPattern": "MongoDB Spark connector with time-series aggregation"
         },
-        "description": "High-frequency sensor data from pH, turbidity, chlorine, flow, and pressure instruments",
+        "description": "Warehouse IoT sensors, cold chain monitoring, and equipment telemetry",
         "tags": [
+          "iot",
           "sensor",
-          "telemetry",
-          "high-frequency",
-          "iot"
+          "real-time",
+          "operational"
         ],
-        "ownedBy": "Instrumentation Team",
-        "accessProcess": "1. Instrumentation engineer approval\n2. Sensor calibration data handling\n3. MongoDB time-series collection access\n4. Measurement uncertainty acknowledgment",
+        "ownedBy": "IoT Platform Team",
+        "accessProcess": "1. Operations technology approval\n2. Data retention policy acknowledgment\n3. MongoDB time-series access\n4. Equipment data use agreement",
         "details": {
-          "connection": "mongodb://sensors.water.local:27017/telemetry",
-          "notes": "Time-series: 1-minute granularity with TTL\nChange streams: Anomaly detection alerts\nRetention: 2 years raw, 10 years hourly aggregates\nCalibration: Sensor drift tracking\nNo PII: Equipment data only"
+          "connection": "mongodb://iot.internal:27017/sensor_data",
+          "notes": "Time-series collections with TTL\nChange streams for anomaly alerts\nData: Equipment only, no personal\nRetention: 90 days raw, 2 years aggregated\nCompression: Time-series compression enabled"
         },
-        "x": 120,
-        "y": 960,
+        "x": 100,
+        "y": 400,
         "inputs": [],
         "outputs": [],
-        "createdAt": "2026-03-01T08:00:00Z",
+        "createdAt": "2026-02-28T08:00:00Z",
         "debeziumAvailable": true,
-        "sparkPattern": "MongoDB Spark connector with time-series collections",
+        "sparkPattern": "MongoDB Spark connector with time-series aggregation",
         "columnSecurity": {
           "piiColumns": [],
           "maskedColumns": [],
@@ -154,47 +151,45 @@
       {
         "id": "source_4",
         "type": "datasource",
-        "name": "Compliance Reporting PostgreSQL",
+        "name": "Demand Planning PostgreSQL",
         "kind": "postgres",
         "dbType": {
           "name": "PostgreSQL",
           "category": "Relational",
           "debezium": true,
           "icon": "🐘",
-          "defaultProcess": "Regulatory affairs approval for Blue Drop reporting",
-          "sparkPattern": "JDBC with row-level security for facility zones"
+          "defaultProcess": "Planning systems data access",
+          "sparkPattern": "JDBC with row-level security for planning regions"
         },
-        "description": "Laboratory results, regulatory compliance reports, Blue Drop assessments, and audit trails",
+        "description": "Demand forecasts, planning scenarios, and statistical baseline data",
         "tags": [
-          "compliance",
-          "regulatory",
-          "blue-drop",
-          "quality"
+          "planning",
+          "forecast",
+          "statistical",
+          "non-pii"
         ],
-        "ownedBy": "Regulatory Affairs Team",
-        "accessProcess": "1. Regulatory affairs manager approval\n2. Blue Drop reporting requirements verification\n3. PostgreSQL RLS for facility access\n4. DWA (Department of Water Affairs) compliance check",
+        "ownedBy": "Demand Planning Team",
+        "accessProcess": "1. Planning Director approval\n2. Forecast sensitivity review\n3. PostgreSQL RLS for region\n4. Data quality SLA agreement",
         "details": {
-          "connection": "postgresql://compliance.water.local:5432/regulatory",
-          "notes": "Row-level security: Municipal vs industrial facilities\nDebezium: Compliance deadline alerts\nBlue Drop: South African water quality grading\nRetention: 20 years for regulatory archive\nAudit: Full traceability for inspections"
+          "connection": "postgresql://planning.internal:5432/demand",
+          "notes": "Row-level security: Planning regions\nDebezium: Forecast version tracking\nData: Aggregated product demand\nRetention: 3 years planning history\nValidation: Statistical accuracy tracked"
         },
-        "x": 120,
-        "y": 1100,
+        "x": 100,
+        "y": 550,
         "inputs": [],
         "outputs": [],
-        "createdAt": "2026-03-01T08:00:00Z",
+        "createdAt": "2026-02-28T08:00:00Z",
         "debeziumAvailable": true,
-        "sparkPattern": "JDBC with row-level security for facility zones",
+        "sparkPattern": "JDBC with row-level security for planning regions",
         "columnSecurity": {
           "piiColumns": [
-            "lab_technician_id",
-            "inspector_ref"
+            "planner_id"
           ],
           "maskedColumns": [
-            "lab_technician_id"
+            "planner_id"
           ],
           "restrictedColumns": [
-            "enforcement_actions",
-            "confidential_remediation_plans"
+            "unpublished_forecasts"
           ]
         }
       }
@@ -204,42 +199,41 @@
       {
         "id": "source_5",
         "type": "datasource",
-        "name": "Process Archive S3",
+        "name": "Time Series Archive S3",
         "kind": "s3",
         "dbType": {
           "name": "Amazon S3 (Parquet)",
           "category": "Object Storage",
           "debezium": false,
           "icon": "🪣",
-          "defaultProcess": "Data science governance committee approval",
-          "sparkPattern": "S3A with Parquet and predicate pushdown for time ranges"
+          "defaultProcess": "Analytics team data lake access",
+          "sparkPattern": "S3A with Parquet and partition pruning"
         },
-        "description": "Historical process data, seasonal patterns, and model training datasets for water treatment optimization",
+        "description": "Historical time-series data for demand forecasting model training",
         "tags": [
-          "archive",
           "historical",
+          "time-series",
           "training",
-          "seasonal"
+          "archive"
         ],
         "ownedBy": "Data Science Platform Team",
-        "accessProcess": "1. Data science governance approval\n2. Process data anonymization verification\n3. S3 IAM with VPC endpoint restriction\n4. Model lineage and reproducibility check",
+        "accessProcess": "1. Analytics use case approval\n2. Data lake governance review\n3. S3 IAM role with conditions\n4. Model lineage registration",
         "details": {
-          "connection": "s3://water-treatment-ml/process-archive/",
-          "notes": "Partitioned: facility/year/month/process_stage\nFormat: Parquet with Snappy compression\nRetention: 15 years for seasonal pattern analysis\nLineage: MLflow tracking for model versions\nAccess: VPC endpoint only, no public access\nPOPIA: No personal data, process parameters only"
+          "connection": "s3://supply-chain-lake/time-series/",
+          "notes": "Partitioned: year/month/product_category\nFormat: Parquet with Snappy\nRetention: 5 years for model training\nLineage: Tracked via MLflow\nAccess: VPC endpoint, no public"
         },
-        "x": 120,
-        "y": 120,
+        "x": 100,
+        "y": 700,
         "inputs": [],
         "outputs": [],
-        "createdAt": "2026-03-01T08:00:00Z",
+        "createdAt": "2026-02-28T08:00:00Z",
         "debeziumAvailable": false,
-        "sparkPattern": "S3A with Parquet and predicate pushdown for time ranges",
+        "sparkPattern": "S3A with Parquet and partition pruning",
         "columnSecurity": {
           "piiColumns": [],
           "maskedColumns": [],
           "restrictedColumns": [
-            "raw_operator_logs",
-            "maintenance_personnel_schedules"
+            "raw_sales_by_customer"
           ]
         }
       }
@@ -249,26 +243,25 @@
       {
         "id": "entity_1",
         "type": "entity",
-        "name": "TreatmentUnit",
-        "joinKey": "unit_tag_id",
-        "description": "Water treatment process units including clarifiers, filters, disinfection systems, and distribution pumps",
+        "name": "ProductSku",
+        "joinKey": "sku_code",
+        "description": "Product stock keeping units with category and attribute hierarchy",
         "tags": [
           "core",
-          "process",
-          "equipment",
-          "operational"
+          "product",
+          "master-data"
         ],
         "details": {
-          "notes": "Unit types: Clarifier, Sand filter, Activated carbon, UV, Chlorination\nProcess: Coagulation, Sedimentation, Filtration, Disinfection\nCapacity: Design and actual throughput\nMaintenance: Scheduled and predictive\nNo PII: Engineering asset data only"
+          "notes": "SKU hierarchy: Category > Subcategory > SKU\nAttributes: Weight, dimensions, shelf life\nVelocity: ABC/XYZ classification\nSeasonality: Pattern classification\nNo PII: Product master data only"
         },
         "x": 400,
-        "y": 120,
+        "y": 100,
         "inputs": [],
         "outputs": [
           "fv_1",
-          "fv_3"
+          "fv_4"
         ],
-        "createdAt": "2026-03-01T08:00:00Z"
+        "createdAt": "2026-02-28T08:00:00Z"
       }
     ],
     [
@@ -276,26 +269,25 @@
       {
         "id": "entity_2",
         "type": "entity",
-        "name": "WaterSource",
-        "joinKey": "source_intake_id",
-        "description": "Raw water sources including dams, rivers, boreholes, and reclaimed water with catchment characteristics",
+        "name": "DistributionNode",
+        "joinKey": "node_code",
+        "description": "Warehouses, distribution centers, and retail stores in network",
         "tags": [
-          "source",
-          "catchment",
-          "raw-water",
-          "environmental"
+          "location",
+          "network",
+          "operational"
         ],
         "details": {
-          "notes": "Source types: Surface (dam, river), Groundwater (borehole), Reclaimed\nCatchment: Land use, geology, climate zone\nSeasonality: Rainfall patterns, drought indices\nQuality: Raw water quality baseline\nEnvironmental: Ecosystem and abstraction limits"
+          "notes": "Node types: DC, Warehouse, Store, Hub\nNetwork: Topology and transit times\nCapacity: Storage and throughput constraints\nRegion: Geographic classification\nOperational: No personal data"
         },
         "x": 400,
-        "y": 260,
+        "y": 250,
         "inputs": [],
         "outputs": [
           "fv_2",
           "fv_5"
         ],
-        "createdAt": "2026-03-01T08:00:00Z"
+        "createdAt": "2026-02-28T08:00:00Z"
       }
     ],
     [
@@ -303,17 +295,16 @@
       {
         "id": "entity_3",
         "type": "entity",
-        "name": "ChemicalBatch",
-        "joinKey": "batch_lot_number",
-        "description": "Chemical treatment batches with dosage, concentration, and reaction tracking",
+        "name": "Supplier",
+        "joinKey": "supplier_code",
+        "description": "External suppliers and vendors with performance metrics",
         "tags": [
-          "chemical",
-          "dosing",
-          "treatment",
-          "batch"
+          "supplier",
+          "procurement",
+          "third-party"
         ],
         "details": {
-          "notes": "Chemical types: Alum, Lime, Chlorine, PAC, Fluoride\nDosing: Automated and manual adjustment\nReactions: Coagulation, pH correction, disinfection\nSafety: MSDS and handling protocols\nTracking: Batch genealogy and consumption"
+          "notes": "Supplier tiers: Strategic, Preferred, Transactional\nPerformance: Aggregated KPIs only\nRisk: Supply disruption indicators\nContracts: Commercial terms (not PII)\nContacts: Workforce data only, POPIA minimal"
         },
         "x": 400,
         "y": 400,
@@ -321,7 +312,7 @@
         "outputs": [
           "fv_3"
         ],
-        "createdAt": "2026-03-01T08:00:00Z"
+        "createdAt": "2026-02-28T08:00:00Z"
       }
     ],
     [
@@ -329,26 +320,25 @@
       {
         "id": "entity_4",
         "type": "entity",
-        "name": "QualitySample",
-        "joinKey": "sample_lab_id",
-        "description": "Water quality samples from laboratory testing and online monitoring with SANS 241 compliance",
+        "name": "DemandForecast",
+        "joinKey": "forecast_id",
+        "description": "Statistical demand forecasts and planning scenarios",
         "tags": [
-          "quality",
-          "laboratory",
-          "compliance",
-          "sans-241"
+          "forecast",
+          "statistical",
+          "planning",
+          "ml-target"
         ],
         "details": {
-          "notes": "Parameters: pH, turbidity, chlorine residual, E. coli, nitrates\nStandards: SANS 241 South African drinking water\nSampling: Grab samples and composite\nFrequency: Continuous, hourly, daily per parameter\nCompliance: Blue Drop and Green Drop ratings"
+          "notes": "Forecast levels: SKU/Node/Week\nScenarios: Baseline, Optimistic, Pessimistic\nAccuracy: WAPE, Bias, MAPE tracked\nVersions: Forecast revision history\nTarget variable: Unit demand"
         },
         "x": 400,
-        "y": 540,
+        "y": 550,
         "inputs": [],
         "outputs": [
-          "fv_4",
-          "fv_5"
+          "fv_4"
         ],
-        "createdAt": "2026-03-01T08:00:00Z"
+        "createdAt": "2026-02-28T08:00:00Z"
       }
     ],
     [
@@ -356,46 +346,46 @@
       {
         "id": "fv_1",
         "type": "featureview",
-        "name": "UnitProcessEfficiency",
+        "name": "ProductDemandProfile",
         "subtype": "batch",
-        "description": "Treatment unit efficiency and performance optimization features",
+        "description": "Product demand patterns and seasonality features",
         "tags": [
-          "efficiency",
-          "process",
-          "optimization",
-          "performance"
+          "demand",
+          "seasonality",
+          "product",
+          "forecasting"
         ],
         "entities": [
           "entity_1"
         ],
         "features": [
           {
-            "name": "hydraulic_loading_rate",
+            "name": "demand_velocity_class",
+            "type": "String"
+          },
+          {
+            "name": "seasonality_strength_index",
             "type": "Float32"
           },
           {
-            "name": "solids_removal_efficiency",
-            "type": "Float32"
+            "name": "trend_direction",
+            "type": "String"
           },
           {
-            "name": "chemical_utilization_ratio",
-            "type": "Float32"
+            "name": "price_elasticity_band",
+            "type": "String"
           },
           {
-            "name": "energy_consumption_kwh_per_m3",
-            "type": "Float32"
-          },
-          {
-            "name": "downtime_hours_30d",
+            "name": "substitution_risk_score",
             "type": "Float32"
           }
         ],
         "details": {
-          "ttl": "14400",
-          "notes": "Source: SQL Server SCADA + S3 historical\nEfficiency: Removal rates and throughput\nOptimization: Cost per megaliter treated\nEnergy: Specific energy consumption\nMaintenance: Predictive maintenance indicators"
+          "ttl": "86400",
+          "notes": "Source: SQL Server ERP + S3 history\nClassification: ABC/XYZ demand patterns\nSeasonality: Decomposition features\nElasticity: Price sensitivity estimates\nNo PII: Product attributes only"
         },
-        "x": 680,
-        "y": 260,
+        "x": 700,
+        "y": 100,
         "inputs": [
           "entity_1"
         ],
@@ -403,7 +393,7 @@
           "service_1",
           "service_2"
         ],
-        "createdAt": "2026-03-01T08:00:00Z"
+        "createdAt": "2026-02-28T08:00:00Z"
       }
     ],
     [
@@ -411,53 +401,53 @@
       {
         "id": "fv_2",
         "type": "featureview",
-        "name": "SourceVariabilityProfile",
+        "name": "NodeOperationalFeatures",
         "subtype": "batch",
-        "description": "Raw water source variability and seasonal quality patterns",
+        "description": "Distribution node operational capacity and constraints",
         "tags": [
-          "variability",
-          "seasonal",
-          "source",
-          "environmental"
+          "operational",
+          "capacity",
+          "constraints",
+          "network"
         ],
         "entities": [
           "entity_2"
         ],
         "features": [
           {
-            "name": "raw_water_turbidity_ntu",
+            "name": "current_utilization_rate",
             "type": "Float32"
           },
           {
-            "name": "organic_load_cod_mg_l",
+            "name": "capacity_constraint_flag",
+            "type": "Bool"
+          },
+          {
+            "name": "inbound_lead_time_days",
             "type": "Float32"
           },
           {
-            "name": "algal_bloom_risk_score",
+            "name": "outbound_lead_time_days",
             "type": "Float32"
           },
           {
-            "name": "drought_index_category",
-            "type": "String"
-          },
-          {
-            "name": "seasonal_abstraction_pattern",
-            "type": "String"
+            "name": "seasonal_capacity_factor",
+            "type": "Float32"
           }
         ],
         "details": {
-          "ttl": "86400",
-          "notes": "Source: MongoDB sensors + PostgreSQL compliance\nVariability: Coefficient of variation per parameter\nSeasonality: Wet vs dry season patterns\nAlgal: Cyanobacteria and toxin risk\nDrought: Dam level and abstraction restrictions"
+          "ttl": "14400",
+          "notes": "Source: SQL Server ERP + IoT sensors\nRefresh: Every 4 hours\nCapacity: Storage and throughput\nLead times: Statistical averages\nConstraints: Hard and soft limits"
         },
-        "x": 680,
-        "y": 540,
+        "x": 700,
+        "y": 250,
         "inputs": [
           "entity_2"
         ],
         "outputs": [
           "service_1"
         ],
-        "createdAt": "2026-03-01T08:00:00Z"
+        "createdAt": "2026-02-28T08:00:00Z"
       }
     ],
     [
@@ -465,55 +455,53 @@
       {
         "id": "fv_3",
         "type": "featureview",
-        "name": "ChemicalDosingOptimization",
-        "subtype": "stream",
-        "description": "Real-time chemical dosing optimization and coagulation control",
+        "name": "SupplierRiskFeatures",
+        "subtype": "batch",
+        "description": "Supplier performance and supply risk indicators",
         "tags": [
-          "chemical",
-          "dosing",
-          "real-time",
-          "coagulation"
+          "supplier",
+          "risk",
+          "procurement",
+          "third-party"
         ],
         "entities": [
-          "entity_1",
           "entity_3"
         ],
         "features": [
           {
-            "name": "optimal_alum_dose_mg_l",
+            "name": "supplier_tier",
+            "type": "String"
+          },
+          {
+            "name": "ontime_delivery_rate",
             "type": "Float32"
           },
           {
-            "name": "jar_test_result_zeta_potential",
+            "name": "quality_defect_rate",
             "type": "Float32"
           },
           {
-            "name": "ph_adjustment_required",
-            "type": "Bool"
-          },
-          {
-            "name": "sludge_volume_forecast",
+            "name": "financial_stability_score",
             "type": "Float32"
           },
           {
-            "name": "chemical_cost_per_m3",
-            "type": "Float32"
+            "name": "geopolitical_risk_band",
+            "type": "String"
           }
         ],
         "details": {
-          "ttl": "3600",
-          "notes": "Source: MySQL inventory + SQL Server SCADA\nJar tests: Laboratory and inline streaming current\nOptimization: Dose-response curves\nCost: Chemical and sludge disposal costs\nReal-time: Automated dosing control loops"
+          "ttl": "604800",
+          "notes": "Source: MySQL supplier portal\nAggregation: 12-month rolling averages\nRisk: External data enrichment\nPOPIA: Only commercial data, minimal workforce\nRefresh: Weekly supplier updates"
         },
-        "x": 680,
-        "y": 680,
+        "x": 700,
+        "y": 400,
         "inputs": [
-          "entity_1",
           "entity_3"
         ],
         "outputs": [
           "service_1"
         ],
-        "createdAt": "2026-03-01T08:00:00Z"
+        "createdAt": "2026-02-28T08:00:00Z"
       }
     ],
     [
@@ -521,53 +509,55 @@
       {
         "id": "fv_4",
         "type": "featureview",
-        "name": "QualityComplianceForecast",
+        "name": "ForecastAccuracyFeatures",
         "subtype": "batch",
-        "description": "Water quality compliance prediction and SANS 241 adherence forecasting",
+        "description": "Historical forecast accuracy and bias correction features",
         "tags": [
-          "compliance",
           "forecast",
-          "quality",
-          "regulatory"
+          "accuracy",
+          "bias",
+          "ml-features"
         ],
         "entities": [
+          "entity_1",
           "entity_4"
         ],
         "features": [
           {
-            "name": "compliance_probability_24h",
+            "name": "historical_wape",
             "type": "Float32"
           },
           {
-            "name": "critical_parameter_violation_risk",
+            "name": "bias_direction",
             "type": "String"
           },
           {
-            "name": "blue_drop_score_forecast",
+            "name": "forecast_revision_count",
+            "type": "Int64"
+          },
+          {
+            "name": "promotional_lift_factor",
             "type": "Float32"
           },
           {
-            "name": "treatment_barrier_failure_risk",
+            "name": "external_event_impact",
             "type": "Float32"
-          },
-          {
-            "name": "regulatory_inspection_readiness",
-            "type": "String"
           }
         ],
         "details": {
-          "ttl": "21600",
-          "notes": "Source: PostgreSQL compliance + S3 history\nSANS 241: South African drinking water standard\nBlue Drop: Municipal water quality incentive program\nBarriers: Multiple barrier approach validation\nForecast: 24-72 hour quality prediction"
+          "ttl": "86400",
+          "notes": "Source: PostgreSQL planning + S3 history\nAccuracy: WAPE, MAPE, Bias metrics\nRevisions: Forecast version tracking\nEvents: Calendar and external factors\nTarget: Demand forecast error correction"
         },
-        "x": 680,
-        "y": 120,
+        "x": 700,
+        "y": 550,
         "inputs": [
+          "entity_1",
           "entity_4"
         ],
         "outputs": [
           "service_2"
         ],
-        "createdAt": "2026-03-01T08:00:00Z"
+        "createdAt": "2026-02-28T08:00:00Z"
       }
     ],
     [
@@ -575,55 +565,49 @@
       {
         "id": "fv_5",
         "type": "featureview",
-        "name": "PredictiveMaintenanceFeatures",
+        "name": "IoTSensorFeatures",
         "subtype": "stream",
-        "description": "Equipment health monitoring and predictive maintenance indicators",
+        "description": "Real-time IoT sensor features for operational optimization",
         "tags": [
-          "maintenance",
-          "predictive",
-          "equipment",
-          "condition"
+          "iot",
+          "real-time",
+          "operational",
+          "sensor"
         ],
         "entities": [
-          "entity_1",
           "entity_2"
         ],
         "features": [
           {
-            "name": "vibration_anomaly_score",
+            "name": "warehouse_temperature_status",
+            "type": "String"
+          },
+          {
+            "name": "equipment_health_score",
             "type": "Float32"
           },
           {
-            "name": "pump_efficiency_degradation",
-            "type": "Float32"
+            "name": "energy_consumption_anomaly",
+            "type": "Bool"
           },
           {
-            "name": "filter_head_loss_trend",
+            "name": "space_utilization_realtime",
             "type": "Float32"
-          },
-          {
-            "name": "membrane_fouling_index",
-            "type": "Float32"
-          },
-          {
-            "name": "days_to_maintenance_prediction",
-            "type": "Int64"
           }
         ],
         "details": {
-          "ttl": "7200",
-          "notes": "Source: MongoDB high-frequency sensors\nAnomaly: Statistical process control + ML\nEfficiency: Pump curves and affinity laws\nMembranes: Transmembrane pressure trends\nPrediction: Remaining useful life estimation"
+          "ttl": "3600",
+          "notes": "Source: MongoDB IoT time-series\nLatency: 5-minute aggregation\nAnomaly: Statistical process control\nOptimization: Real-time capacity planning\nNo PII: Equipment sensors only"
         },
-        "x": 680,
-        "y": 820,
+        "x": 700,
+        "y": 700,
         "inputs": [
-          "entity_1",
           "entity_2"
         ],
         "outputs": [
           "service_2"
         ],
-        "createdAt": "2026-03-01T08:00:00Z"
+        "createdAt": "2026-02-28T08:00:00Z"
       }
     ],
     [
@@ -631,13 +615,13 @@
       {
         "id": "service_1",
         "type": "service",
-        "name": "ProcessOptimizationModelTraining",
-        "description": "Training data service for water treatment process optimization and chemical dosing ML models",
+        "name": "DemandForecastingModelTraining",
+        "description": "Training data service for statistical and ML demand forecasting",
         "tags": [
-          "process-optimization",
-          "chemical-dosing",
+          "forecasting",
+          "demand-planning",
           "ml-training",
-          "engineering"
+          "explainable"
         ],
         "features": [
           "fv_1",
@@ -648,31 +632,31 @@
         "details": {
           "usedBy": [
             {
-              "name": "process-engineering-data-scientists",
+              "name": "demand-planning-data-scientists",
               "environment": "Development",
               "sla": "Best effort",
-              "contact": "process-ml@watertreatment",
-              "description": "Coagulation optimization and energy efficiency model development"
+              "contact": "demand-ml@internal",
+              "description": "Statistical forecasting and ML model development"
             },
             {
-              "name": "operations-research-team",
+              "name": "inventory-optimization-team",
               "environment": "UAT",
               "sla": "99%",
-              "contact": "ops-research@watertreatment",
-              "description": "Process simulation and digital twin calibration"
+              "contact": "inventory-analytics@internal",
+              "description": "Safety stock and reorder point optimization models"
             }
           ],
-          "notes": "Purpose: Treatment process optimization and cost reduction\nModels: Neural networks for coagulation, Random forest for energy\nExplainability: SHAP for chemical dosing decisions\nValidation: Jar test correlation and full-scale verification\nSafety: Model outputs validated by process engineers\nCost: Chemical savings and energy reduction targets"
+          "notes": "Purpose: Demand prediction and inventory optimization\nExplainability: Feature importance for planning explainability\nAccuracy: WAPE and bias monitoring\nHierarchy: SKU, Category, Aggregate levels\nNo PII: Product and operational data only\nGovernance: Supply chain data stewardship"
         },
-        "x": 960,
-        "y": 120,
+        "x": 1000,
+        "y": 300,
         "inputs": [
           "fv_1",
           "fv_2",
           "fv_3"
         ],
         "outputs": [],
-        "createdAt": "2026-03-01T08:00:00Z"
+        "createdAt": "2026-02-28T08:00:00Z"
       }
     ],
     [
@@ -680,13 +664,13 @@
       {
         "id": "service_2",
         "type": "service",
-        "name": "ComplianceAndMaintenanceML",
-        "description": "ML training data for quality compliance forecasting and predictive maintenance",
+        "name": "OperationalOptimizationTraining",
+        "description": "ML training data for warehouse operations and network optimization",
         "tags": [
-          "compliance",
-          "predictive-maintenance",
-          "quality-forecasting",
-          "regulatory"
+          "operations",
+          "optimization",
+          "iot",
+          "real-time"
         ],
         "features": [
           "fv_1",
@@ -697,31 +681,31 @@
         "details": {
           "usedBy": [
             {
-              "name": "compliance-data-scientists",
-              "environment": "Production",
-              "sla": "99%",
-              "contact": "compliance-ml@watertreatment",
-              "description": "Blue Drop score prediction and regulatory risk assessment"
-            },
-            {
-              "name": "asset-management-team",
+              "name": "operations-research-team",
               "environment": "Production",
               "sla": "95%",
-              "contact": "maintenance-ml@watertreatment",
-              "description": "Predictive maintenance and asset life optimization"
+              "contact": "ops-research@internal",
+              "description": "Warehouse automation and robotics optimization"
+            },
+            {
+              "name": "network-planning-team",
+              "environment": "Production",
+              "sla": "99%",
+              "contact": "network-planning@internal",
+              "description": "Distribution network design and capacity planning"
             }
           ],
-          "notes": "Purpose: Regulatory compliance assurance and asset optimization\nBlue Drop: Municipal water quality incentive rating\nMaintenance: Condition-based maintenance scheduling\nSafety: Critical equipment failure prediction\nPOPIA: Minimal - facility operators only\nExplainability: Regulatory audit trail and maintenance justification"
+          "notes": "Purpose: Operational efficiency and automation\nData: IoT sensors, forecasts, and capacity\nReal-time: Streaming sensor features\nOptimization: Linear programming and heuristics\nExplainability: Operational decision transparency\nPOPIA: Minimal - only workforce contacts in suppliers"
         },
-        "x": 960,
-        "y": 540,
+        "x": 1000,
+        "y": 600,
         "inputs": [
           "fv_1",
           "fv_4",
           "fv_5"
         ],
         "outputs": [],
-        "createdAt": "2026-03-01T08:00:00Z"
+        "createdAt": "2026-02-28T08:00:00Z"
       }
     ]
   ],
@@ -734,8 +718,8 @@
     },
     {
       "from": "entity_1",
-      "to": "fv_3",
-      "id": "entity_1->fv_3",
+      "to": "fv_4",
+      "id": "entity_1->fv_4",
       "animated": false
     },
     {
@@ -760,12 +744,6 @@
       "from": "entity_4",
       "to": "fv_4",
       "id": "entity_4->fv_4",
-      "animated": false
-    },
-    {
-      "from": "entity_4",
-      "to": "fv_5",
-      "id": "entity_4->fv_5",
       "animated": false
     },
     {
@@ -805,6 +783,6 @@
       "animated": false
     }
   ],
-  "exportDate": "2026-03-01T10:00:00Z",
+  "exportDate": "2026-02-28T18:28:11.745Z",
   "version": "3.0"
 }
