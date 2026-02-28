@@ -35,8 +35,8 @@
           "connection": "sqlserver://erp.internal:1433/SupplyChainDB",
           "notes": "Debezium CDC for real-time inventory\nChange tracking: Incremental ETL\nData: Product and operational only, no consumer PII\nRetention: 7 years for financial audit\nEncryption: TDE standard"
         },
-        "x": 100,
-        "y": 100,
+        "x": 120,
+        "y": 680,
         "inputs": [],
         "outputs": [],
         "createdAt": "2026-02-28T08:00:00Z",
@@ -83,8 +83,8 @@
           "connection": "mysql://suppliers.internal:3306/procurement",
           "notes": "Debezium for supplier status changes\nSupplier data: Commercial confidentiality\nPOPIA: Minimal - only contact persons (workforce)\nRetention: Contract duration + 5 years\nPerformance: Ratings aggregated"
         },
-        "x": 100,
-        "y": 250,
+        "x": 120,
+        "y": 820,
         "inputs": [],
         "outputs": [],
         "createdAt": "2026-02-28T08:00:00Z",
@@ -133,8 +133,8 @@
           "connection": "mongodb://iot.internal:27017/sensor_data",
           "notes": "Time-series collections with TTL\nChange streams for anomaly alerts\nData: Equipment only, no personal\nRetention: 90 days raw, 2 years aggregated\nCompression: Time-series compression enabled"
         },
-        "x": 100,
-        "y": 400,
+        "x": 120,
+        "y": 960,
         "inputs": [],
         "outputs": [],
         "createdAt": "2026-02-28T08:00:00Z",
@@ -175,8 +175,8 @@
           "connection": "postgresql://planning.internal:5432/demand",
           "notes": "Row-level security: Planning regions\nDebezium: Forecast version tracking\nData: Aggregated product demand\nRetention: 3 years planning history\nValidation: Statistical accuracy tracked"
         },
-        "x": 100,
-        "y": 550,
+        "x": 120,
+        "y": 1100,
         "inputs": [],
         "outputs": [],
         "createdAt": "2026-02-28T08:00:00Z",
@@ -223,8 +223,8 @@
           "connection": "s3://supply-chain-lake/time-series/",
           "notes": "Partitioned: year/month/product_category\nFormat: Parquet with Snappy\nRetention: 5 years for model training\nLineage: Tracked via MLflow\nAccess: VPC endpoint, no public"
         },
-        "x": 100,
-        "y": 700,
+        "x": 120,
+        "y": 120,
         "inputs": [],
         "outputs": [],
         "createdAt": "2026-02-28T08:00:00Z",
@@ -256,7 +256,7 @@
           "notes": "SKU hierarchy: Category > Subcategory > SKU\nAttributes: Weight, dimensions, shelf life\nVelocity: ABC/XYZ classification\nSeasonality: Pattern classification\nNo PII: Product master data only"
         },
         "x": 400,
-        "y": 100,
+        "y": 120,
         "inputs": [],
         "outputs": [
           "fv_1",
@@ -282,11 +282,11 @@
           "notes": "Node types: DC, Warehouse, Store, Hub\nNetwork: Topology and transit times\nCapacity: Storage and throughput constraints\nRegion: Geographic classification\nOperational: No personal data"
         },
         "x": 400,
-        "y": 250,
+        "y": 260,
         "inputs": [],
         "outputs": [
           "fv_2",
-          "fv_3"
+          "fv_5"
         ],
         "createdAt": "2026-02-28T08:00:00Z"
       }
@@ -334,11 +334,10 @@
           "notes": "Forecast levels: SKU/Node/Week\nScenarios: Baseline, Optimistic, Pessimistic\nAccuracy: WAPE, Bias, MAPE tracked\nVersions: Forecast revision history\nTarget variable: Unit demand"
         },
         "x": 400,
-        "y": 550,
+        "y": 540,
         "inputs": [],
         "outputs": [
-          "fv_4",
-          "fv_5"
+          "fv_4"
         ],
         "createdAt": "2026-02-28T08:00:00Z"
       }
@@ -386,8 +385,8 @@
           "ttl": "86400",
           "notes": "Source: SQL Server ERP + S3 history\nClassification: ABC/XYZ demand patterns\nSeasonality: Decomposition features\nElasticity: Price sensitivity estimates\nNo PII: Product attributes only"
         },
-        "x": 700,
-        "y": 100,
+        "x": 680,
+        "y": 260,
         "inputs": [
           "entity_1"
         ],
@@ -441,8 +440,8 @@
           "ttl": "14400",
           "notes": "Source: SQL Server ERP + IoT sensors\nRefresh: Every 4 hours\nCapacity: Storage and throughput\nLead times: Statistical averages\nConstraints: Hard and soft limits"
         },
-        "x": 700,
-        "y": 250,
+        "x": 680,
+        "y": 540,
         "inputs": [
           "entity_2"
         ],
@@ -495,8 +494,8 @@
           "ttl": "604800",
           "notes": "Source: MySQL supplier portal\nAggregation: 12-month rolling averages\nRisk: External data enrichment\nPOPIA: Only commercial data, minimal workforce\nRefresh: Weekly supplier updates"
         },
-        "x": 700,
-        "y": 400,
+        "x": 680,
+        "y": 680,
         "inputs": [
           "entity_3"
         ],
@@ -550,8 +549,8 @@
           "ttl": "86400",
           "notes": "Source: PostgreSQL planning + S3 history\nAccuracy: WAPE, MAPE, Bias metrics\nRevisions: Forecast version tracking\nEvents: Calendar and external factors\nTarget: Demand forecast error correction"
         },
-        "x": 700,
-        "y": 550,
+        "x": 680,
+        "y": 120,
         "inputs": [
           "entity_1",
           "entity_4"
@@ -601,8 +600,8 @@
           "ttl": "3600",
           "notes": "Source: MongoDB IoT time-series\nLatency: 5-minute aggregation\nAnomaly: Statistical process control\nOptimization: Real-time capacity planning\nNo PII: Equipment sensors only"
         },
-        "x": 700,
-        "y": 700,
+        "x": 680,
+        "y": 820,
         "inputs": [
           "entity_2"
         ],
@@ -650,8 +649,8 @@
           ],
           "notes": "Purpose: Demand prediction and inventory optimization\nExplainability: Feature importance for planning explainability\nAccuracy: WAPE and bias monitoring\nHierarchy: SKU, Category, Aggregate levels\nNo PII: Product and operational data only\nGovernance: Supply chain data stewardship"
         },
-        "x": 1000,
-        "y": 300,
+        "x": 960,
+        "y": 120,
         "inputs": [
           "fv_1",
           "fv_2",
@@ -699,8 +698,8 @@
           ],
           "notes": "Purpose: Operational efficiency and automation\nData: IoT sensors, forecasts, and capacity\nReal-time: Streaming sensor features\nOptimization: Linear programming and heuristics\nExplainability: Operational decision transparency\nPOPIA: Minimal - only workforce contacts in suppliers"
         },
-        "x": 1000,
-        "y": 600,
+        "x": 960,
+        "y": 540,
         "inputs": [
           "fv_1",
           "fv_4",
