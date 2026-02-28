@@ -125,6 +125,10 @@
             gap: 12px;
         }
 
+	.hide-me {
+	    display: none
+	}
+
         .toolbar-logo {
             width: 40px;
             height: 40px;
@@ -3356,17 +3360,15 @@
                 </div>
             </div>
 
-            <div class="toolbar-section">
+<div class="toolbar-section hide-me">
                 <!-- User/Team Selector -->
-                <div class="user-selector" onclick="diagram.showUserSelector()">
+                <div class="user-selector hide-me" onclick="diagram.showUserSelector()">
                     <div class="user-avatar" id="userAvatar">JD</div>
                     <div class="user-info">
                         <div class="user-name" id="userName">John Doe</div>
                         <div class="user-role" id="userRole">Data Engineer</div>
                     </div>
-                </div>
-
-                <div class="toolbar-divider"></div>
+                </div>                <div class="toolbar-divider"></div>
 
                 <div class="search-box">
                     <span class="search-icon">🔍</span>

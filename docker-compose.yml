@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: django-auth-dev
+    # Root access for development
+    user: root
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - /app/__pycache__
+    networks:
+      - django-feast
+    environment:
+      - DEBUG=1
+      - PYTHONUNBUFFERED=1
+    stdin_open: true
+    tty: true
+
+networks:
+  django-feast:
+    name: django-feast
+    driver: bridge

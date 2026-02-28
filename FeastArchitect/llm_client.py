@@ -9,6 +9,10 @@ from dataclasses import dataclass, asdict
 
 
 
+# Not secured - but since this is a dummy project...
+GROQ_API_KEY ='xxxx'
+# Ensure it's in environment
+os.environ['GROQ_API_KEY'] = GROQ_API_KEY
 
 
 try:

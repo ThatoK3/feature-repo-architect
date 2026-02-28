@@ -1,0 +1,66 @@
+{% extends 'SecureGate/base.html' %} {% block content %}
+<form class="myform100-form validate-form">
+  {% csrf_token %}
+  <span class="myform100-form-title"> Login </span>
+
+  <div
+    class="wrap-input100 validate-input"
+    data-validate="Valid username is required"
+  >
+    <input
+      class="input100"
+      type="text"
+      name="username"
+      placeholder="Username"
+    />
+    <span class="focus-input100"></span>
+    <span class="symbol-input100">
+      <i class="fa fa-user" aria-hidden="true"></i>
+    </span>
+  </div>
+
+  <div
+    class="wrap-input100 validate-input"
+    data-validate="Password is required"
+  >
+    <input
+      class="input100"
+      type="password"
+      name="password"
+      placeholder="Password"
+    />
+    <span class="focus-input100"></span>
+    <span class="symbol-input100">
+      <i class="fa fa-lock" aria-hidden="true"></i>
+    </span>
+  </div>
+
+  <span
+    class="myform100-form-title"
+    style="font-size: 12px; color: red; text-align: center; padding: 5px"
+    id="login_error"
+  ></span>
+
+  <div class="container-myform100-form-btn">
+    <button type="submit" class="myform100-form-btn" id="login" >Login</button>
+  </div>
+
+  <div class="text-center p-t-12">
+    <span class="txt1"> Forgot </span>
+    <a onclick="recoverPassword()" class="txt2" href="#forgotpassword">
+      Password?
+    </a>
+  </div>
+
+  <div class="text-center p-t-100">
+    <a onclick="requestAccess()" class="txt2" href="#requestaccess">
+        Request access/ report an issue
+      <i class="fa fa-long-arrow-right m-l-5" aria-hidden="true"></i>
+    </a>
+  </div>
+</form>
+
+{% endblock%}
+
+
+

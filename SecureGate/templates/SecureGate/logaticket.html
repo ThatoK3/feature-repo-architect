@@ -1,0 +1,79 @@
+{% extends 'SecureGate/base.html' %} {% block topnav %}
+<nav class="text-on-line">
+  <div class="nav-brand-image">
+    <span>
+      <a href="/">DataSenseHub</a>
+    </span>
+  </div>
+  <span class="nav-brand">
+    <h3></h3>
+  </span>
+  <ul class="links-container">
+    <li class="nav-username">
+      <span>Welcome, {{ username }}!</span>
+    </li>
+    <li class="link" onclick="submitLogout()"><a>Logout</a></li>
+  </ul>
+</nav>
+  {% endblock %} {% block content %}
+  <form id="create-ticket-form" class="myform100-form">
+    {% csrf_token %}
+
+    <select style="margin-bottom: 25px; height: 44px" class="input" name="ticket_type">
+      <option value="" selected="">Choose category</option>
+      <option value="incident">Report an issue</option>
+      <option value="request">Request access</option>
+    </select>
+
+    <span style="
+    font-size: 11px;
+    color: #4343f1;
+    text-align: left;
+    font-family: Poppins-Bold;
+    ">Please enter query details</span>
+
+    <textarea class="form-textarea" name="description"></textarea>
+
+    <div class="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz" style="
+    margin-top: 30px;">
+						<input class="input100" type="text" name="email" placeholder="Email">
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-envelope" aria-hidden="true"></i>
+						</span>
+		</div>
+
+    <div class="container-myform100-form-btn">
+      <button
+        type="submit"
+        style="margin-top: 30px"
+        class="myform100-form-btn"
+      >
+        Send
+      </button>
+    </div>
+
+    <div class="text-center p-t-25">
+      <a onclick="" class="txt2" href="../">
+          {{ goto_link }}
+        <i class="fa fa-long-arrow-left m-l-5" aria-hidden="true"></i>
+      </a>
+    </div>
+</form>
+
+  {%endblock%} {% block custom_script %}
+    <script>
+    document.getElementById("dsy-logo").classList.add("rotate");
+    setTimeout(function () {
+      document.getElementById("dsy-logo").classList.remove("rotate");
+    }, 5000);
+
+    $(document).ready(function() {
+        prepareTicketForm();
+    });
+
+
+      
+  </script>
+  {% endblock %}
+

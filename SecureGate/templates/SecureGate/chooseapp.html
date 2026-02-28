@@ -1,0 +1,145 @@
+{% extends 'SecureGate/base.html' %} {% block topnav %}
+<nav class="text-on-line">
+  <div class="nav-brand-image">
+    <span>
+      <a href="/">DataSenseHub</a>
+    </span>
+  </div>
+  <span class="nav-brand">
+    <h3></h3>
+  </span>
+  <ul class="links-container">
+    <li class="nav-username">
+      <span>Welcome, {{ username }}!</span>
+    </li>
+    <li class="link" onclick="submitLogout()"><a>Logout</a></li>
+  </ul>
+</nav>
+  {% endblock %} {% block content %}
+  <form class="myform100-form">
+    {% csrf_token %}
+
+
+
+
+
+    <select name="application-name" id="appSelector" style="margin-bottom: 25px" class="input" onchange="handleAppSelect(this.value)">
+    <option value="" selected disabled>Choose application</option>
+    <option value="feast-ui">Feast Feature Store</option>
+    <option value="datahub">DataHub Catalog</option>
+    <option value="mlflow">MLflow Tracking</option>
+    <option value="jupyter">Jupyter Hub</option>
+    <option value="airflow">Airflow Pipelines</option>
+    <option value="grafana">Grafana Monitoring</option>
+</select>
+
+<select name="application-team" id="teamSelector" class="input" style="margin-bottom: 25px; display: none;">
+    <option value="" selected disabled>Choose team</option>
+    <option value="data-platform">Data Platform</option>
+    <option value="ml-platform">ML Platform</option>
+    <option value="analytics">Analytics</option>
+    <option value="data-science">Data Science</option>
+    <option value="engineering">Engineering</option>
+</select>
+
+<div class="container-myform100-form-btn">
+    <button
+        type="button"
+        id="openAppBtn"
+        style="margin-bottom: 80px; margin-top: 30px"
+        class="myform100-form-btn"
+        onclick="openApplication()"
+        disabled
+    >
+        Open Application
+    </button>
+</div>
+
+<script>
+const appRoutes = {
+    'feast-ui': '/feast-ui/',
+    'datahub': '/datahub/',
+    'mlflow': '/mlflow/',
+    'jupyter': '/jupyter/',
+    'airflow': '/airflow/',
+    'grafana': '/grafana/'
+};
+
+const teamRequirements = ['feast-ui', 'datahub', 'mlflow'];
+
+function handleAppSelect(appValue) {
+    const teamSelector = document.getElementById('teamSelector');
+    const openBtn = document.getElementById('openAppBtn');
+    
+    if (!appValue) {
+        openBtn.disabled = true;
+        teamSelector.style.display = 'none';
+        return;
+    }
+    
+    // Show team selector for specific apps
+    if (teamRequirements.includes(appValue)) {
+        teamSelector.style.display = 'block';
+        teamSelector.value = ''; // Reset team selection
+        openBtn.disabled = true;
+    } else {
+        teamSelector.style.display = 'none';
+        openBtn.disabled = false;
+    }
+    
+    // Auto-redirect for Feast UI (first option)
+    if (appValue === 'feast-ui') {
+        // Optional: auto-redirect immediately or wait for team selection
+        // window.location.href = appRoutes[appValue];
+    }
+}
+
+document.getElementById('teamSelector').addEventListener('change', function() {
+    const openBtn = document.getElementById('openAppBtn');
+    openBtn.disabled = !this.value;
+});
+
+function openApplication() {
+    const app = document.getElementById('appSelector').value;
+    const team = document.getElementById('teamSelector').value;
+    
+    if (!app) return;
+    
+    let url = appRoutes[app];
+    
+    // Append team as query param if selected
+    if (team) {
+        url += (url.includes('?') ? '&' : '?') + 'team=' + encodeURIComponent(team);
+    }
+    
+    window.location.href = url;
+}
+</script>
+
+
+
+
+
+
+
+    <div class="text-center p-t-136">
+      <a onclick="" class="txt2" href="./logaticket">
+         Request access/ report an issue
+        <i class="fa fa-long-arrow-right m-l-5" aria-hidden="true"></i>
+      </a>
+    </div>
+  </form>
+
+  {%endblock%} 
+  
+  {% block custom_script %}
+  <script>
+    document.getElementById("dsy-logo").classList.add("rotate");
+    setTimeout(function () {
+      document.getElementById("dsy-logo").classList.remove("rotate");
+    }, 5000);
+  </script>
+
+  <script src="static/js/logTicket.js"></script>
+  {% endblock %}
+

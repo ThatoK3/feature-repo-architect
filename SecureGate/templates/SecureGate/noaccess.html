@@ -1,0 +1,21 @@
+{% extends 'SecureGate/base.html' %} {% block content %}
+<form class="myform100-form validate-form">
+  {% csrf_token %}
+
+  <div
+    class="myform100-form-title"
+    style="color: #931717; padding-bottom: 180px"
+  >
+    <i class="fa fa-exclamation-triangle m-l-5" aria-hidden="true"></i><br />
+    You do not have access to this application
+  </div>
+
+  <div class="text-center p-t-136">
+    <a onclick="" class="txt2" href="../" style="">
+      Go to appications page
+      <i class="fa fa-long-arrow-left m-l-5" aria-hidden="true"></i>
+    </a>
+  </div>
+</form>
+
+{%endblock%}

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lockout</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .lockout-container {
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .lockout-image {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 180px;
+            color: white;
+            font-size: 80px;
+            margin-bottom: 20px;
+	    padding: 50px 65px 50px 65px;
+        }
+        .lockout-link {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .lockout-link:hover {
+            text-decoration: underline;
+        }
+        .ban{
+            font-weight: bold;
+            color:#cca4a4;
+            background: white;
+            border-radius: 15%;
+        }   
+    </style>
+</head>
+<body>
+    <div class="lockout-container">
+        <span class="lockout-image" src="lockout.png" alt="Lockout Image">X</span>
+        <h1>Access Denied</h1>
+        <p>Your access has been temporarily locked out due to suspicious behaviour.</p>
+        <p>Please contact support for assistance.</p>
+        
+        <a class="lockout-link" href="mailto:ThatoJoe@outlook.com">Contact Support</a>
+
+        <p class="ban">Please try to access this site after an hour</p>
+    </div>
+
+</body></html>

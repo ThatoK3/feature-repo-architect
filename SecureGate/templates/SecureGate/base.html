@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{{ page_title }}</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="static/images/icons/favicon.ico" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="static/fonts/font-awesome-4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" type="text/css" href="static/css/util.css" />
+    <link rel="stylesheet" type="text/css" href="static/css/auth.css" />
+  </head>
+  <body>
+    <div class="limiter">
+      {% block topnav %}{% endblock %}
+      </nav>
+      <div class="container-myform100">
+        <div class="wrap-myform100">
+          <div class="myform100-pic js-tilt" data-tilt="" id="dsy-logo">
+            <img src="static/images/img-01.png" alt="IMG" />
+          </div>
+
+          {% block content %}{% endblock %}
+        </div>
+      </div>
+    </div>
+
+    <script src="static/vendor/jquery/jquery-3.2.1.min.js"></script>
+    <script src="static/vendor/tilt/tilt.jquery.min.js"></script>
+    <script>
+      $(".js-tilt").tilt({
+        scale: 1.1,
+      });
+    </script>
+
+    <script src="static/js/logTicket.js"></script>
+
+    {% block custom_script %}{% endblock %}
+
+    <script src="static/js/auth.js"></script>
+  </body>
+</html>
