@@ -1,0 +1,430 @@
+{
+    "repository": {
+      "name": "healthcare_analytics_ml",
+      "location": "/opt/feast/healthcare",
+      "defaultOwner": "Clinical Data Science Team",
+      "id": 2,
+      "description": "Healthcare predictive analytics platform for patient outcomes, readmission risk, and resource optimization. POPIA-compliant with Section 26 special personal information (health data) handling. Supports clinical ML model development with full audit trails for HPCSA (Health Professions Council of SA) compliance. Uses MSSQL (hospital EHR), MySQL (patient administration), MongoDB (clinical notes), PostgreSQL (research registry), and S3 (imaging archives). 4 entities: Patient, HealthcareProvider, MedicalEpisode, and TreatmentProtocol. Implements differential privacy for training data and explainable AI for clinical decision support."
+    },
+    "nodes": [
+      ["source_1", {
+        "id": "source_1",
+        "type": "datasource",
+        "name": "Hospital EHR SQL Server",
+        "kind": "sqlserver",
+        "dbType": {
+          "name": "SQL Server",
+          "category": "Relational",
+          "debezium": true,
+          "icon": "🗃️",
+          "defaultProcess": "HPCSA ethics committee approval required",
+          "sparkPattern": "MS JDBC with Always Encrypted and audit logging"
+        },
+        "description": "Electronic health records, diagnoses, procedures, and medication orders",
+        "tags": ["clinical", "popia-health", "hpcsa-governed", "special-info"],
+        "ownedBy": "Health Informatics Team",
+        "accessProcess": "1. HPCSA ethics committee approval\n2. POPIA Section 26 health data authorization\n3. Hospital CIO sign-off\n4. De-identification protocol verification\n5. Read-only clinical replica",
+        "details": {
+          "connection": "sqlserver://ehr.hospital.local:1433/ClinicalDB",
+          "notes": "POPIA Section 26: Health data special category\nHPCSA: Professional conduct compliance\nDebezium: Clinical event streaming\nEncryption: Always Encrypted + TDE\nRetention: 20 years per Health Records Act\nAnonymization: HIPAA-safe harbor equivalent for ML"
+        },
+        "x": 100, "y": 100,
+        "inputs": [], "outputs": [],
+        "createdAt": "2026-02-28T08:00:00Z",
+        "debeziumAvailable": true,
+        "sparkPattern": "MS JDBC with Always Encrypted and audit logging",
+        "columnSecurity": {
+          "piiColumns": ["patient_id", "sa_id_number", "medical_aid_number", "contact_details"],
+          "maskedColumns": ["medical_aid_number"],
+          "restrictedColumns": ["sa_id_number", "exact_address", "next_of_kin"],
+          "anonymizationMethod": "Date shifting + ID replacement for research"
+        }
+      }],
+      ["source_2", {
+        "id": "source_2",
+        "type": "datasource",
+        "name": "Patient Administration MySQL",
+        "kind": "mysql",
+        "dbType": {
+          "name": "MySQL",
+          "category": "Relational",
+          "debezium": true,
+          "icon": "🐬",
+          "defaultProcess": "Hospital data access committee approval",
+          "sparkPattern": "JDBC with SSL and field-level pseudonymization"
+        },
+        "description": "Admissions, discharges, transfers, and bed management data",
+        "tags": ["administrative", "operational", "popia-sensitive"],
+        "ownedBy": "Hospital Operations Team",
+        "accessProcess": "1. Operational need justification\n2. POPIA consent verification for analytics\n3. MySQL read replica with SSL\n4. Quarterly access recertification",
+        "details": {
+          "connection": "mysql://admin.hospital.local:3306/patient_admin",
+          "notes": "Percona with audit plugin\nDebezium for admission alerts\nPOPIA: Consent for secondary use\nRetention: 7 years for operational data\nPseudonymization: Patient ID hashing"
+        },
+        "x": 100, "y": 250,
+        "inputs": [], "outputs": [],
+        "createdAt": "2026-02-28T08:00:00Z",
+        "debeziumAvailable": true,
+        "sparkPattern": "JDBC with SSL and field-level pseudonymization",
+        "columnSecurity": {
+          "piiColumns": ["admission_id", "ward_location", "attending_physician"],
+          "maskedColumns": ["attending_physician"],
+          "restrictedColumns": ["emergency_contact", "private_insurance_details"]
+        }
+      }],
+      ["source_3", {
+        "id": "source_3",
+        "type": "datasource",
+        "name": "Clinical Notes MongoDB",
+        "kind": "mongodb",
+        "dbType": {
+          "name": "MongoDB",
+          "category": "NoSQL",
+          "debezium": true,
+          "icon": "🍃",
+          "defaultProcess": "Clinical NLP governance board approval",
+          "sparkPattern": "MongoDB Spark with client-side field encryption"
+        },
+        "description": "Unstructured clinical notes, discharge summaries, and radiology reports",
+        "tags": ["unstructured", "nlp", "clinical-text", "special-info"],
+        "ownedBy": "Clinical NLP Team",
+        "accessProcess": "1. Clinical NLP governance approval\n2. POPIA Section 26 health text authorization\n3. MongoDB client-side encryption keys\n4. Note de-identification verification",
+        "details": {
+          "connection": "mongodb://nlp.hospital.local:27017/clinical_notes",
+          "notes": "Change streams for new notes\nField-level encryption for sensitive sections\nNLP: Named entity recognition for de-identification\nPOPIA: Health data special handling\nRetention: 20 years per clinical requirements"
+        },
+        "x": 100, "y": 400,
+        "inputs": [], "outputs": [],
+        "createdAt": "2026-02-28T08:00:00Z",
+        "debeziumAvailable": true,
+        "sparkPattern": "MongoDB Spark with client-side field encryption",
+        "columnSecurity": {
+          "piiColumns": ["note_text", "provider_name", "patient_mentions"],
+          "maskedColumns": [],
+          "restrictedColumns": ["raw_clinical_text", "mental_health_notes"]
+        }
+      }],
+      ["source_4", {
+        "id": "source_4",
+        "type": "datasource",
+        "name": "Research Registry PostgreSQL",
+        "kind": "postgres",
+        "dbType": {
+          "name": "PostgreSQL",
+          "category": "Relational",
+          "debezium": true,
+          "icon": "🐘",
+          "defaultProcess": "Research ethics committee approval",
+          "sparkPattern": "JDBC with row-level security and data masking"
+        },
+        "description": "Research cohorts, clinical trial data, and outcome registries",
+        "tags": ["research", "clinical-trials", "popia-health", "ethics-governed"],
+        "ownedBy": "Research Informatics Team",
+        "accessProcess": "1. Research ethics committee (REC) approval\n2. POPIA Section 26 health research authorization\n3. Data use agreement (DUA) signed\n4. PostgreSQL RLS for cohort isolation",
+        "details": {
+          "connection": "postgresql://research.hospital.local:5432/registry",
+          "notes": "Row-level security per study\nDebezium for trial enrollment alerts\nPOPIA: Research exemption documentation\nConsent: Explicit research consent required\nRetention: Per study protocol + 15 years"
+        },
+        "x": 100, "y": 550,
+        "inputs": [], "outputs": [],
+        "createdAt": "2026-02-28T08:00:00Z",
+        "debeziumAvailable": true,
+        "sparkPattern": "JDBC with row-level security and data masking",
+        "columnSecurity": {
+          "piiColumns": ["participant_id", "consent_form_ref", "investigator_id"],
+          "maskedColumns": ["investigator_id"],
+          "restrictedColumns": ["genomic_data", "rare_disease_flags"]
+        }
+      }],
+      ["source_5", {
+        "id": "source_5",
+        "type": "datasource",
+        "name": "Medical Imaging S3 Archive",
+        "kind": "s3",
+        "dbType": {
+          "name": "Amazon S3 (DICOM/Parquet)",
+          "category": "Object Storage",
+          "debezium": false,
+          "icon": "🪣",
+          "defaultProcess": "Radiology ML governance approval",
+          "sparkPattern": "S3A with DICOM parsing and metadata extraction"
+        },
+        "description": "Medical imaging archives, radiology metadata, and imaging-derived features",
+        "tags": ["imaging", "dicom", "high-volume", "special-info"],
+        "ownedBy": "Radiology Informatics Team",
+        "accessProcess": "1. Radiology ML governance approval\n2. POPIA Section 26 imaging authorization\n3. S3 bucket policy with VPC endpoint\n4. DICOM de-identification verification",
+        "details": {
+          "connection": "s3://hospital-imaging-ml/dicom-features/",
+          "notes": "DICOM tags: De-identified per DICOM standard\nMetadata: Extracted to Parquet\nRetention: 20 years per HPCSA\nPOPIA: Health imaging special category\nAccess: VPC endpoint only, no public"
+        },
+        "x": 100, "y": 700,
+        "inputs": [], "outputs": [],
+        "createdAt": "2026-02-28T08:00:00Z",
+        "debeziumAvailable": false,
+        "sparkPattern": "S3A with DICOM parsing and metadata extraction",
+        "columnSecurity": {
+          "piiColumns": ["dicom_patient_id", "study_date", "institution_name"],
+          "maskedColumns": ["institution_name"],
+          "restrictedColumns": ["raw_pixel_data", "burned_in_annotation"]
+        }
+      }],
+      ["entity_1", {
+        "id": "entity_1",
+        "type": "entity",
+        "name": "Patient",
+        "joinKey": "patient_research_hash",
+        "description": "Healthcare patients with POPIA Section 26 health data pseudonymization",
+        "tags": ["core", "popia-health-subject", "special-info"],
+        "details": {
+          "notes": "POPIA Section 26: Health data special category\nConsent: Explicit for research use\nPseudonymization: Research ID separate from clinical ID\nHPCSA: Ethical conduct compliance\nDemographics: Age bands, not exact DOB\nRetention: 20 years post last encounter"
+        },
+        "x": 400, "y": 100,
+        "inputs": [],
+        "outputs": ["fv_1", "fv_2", "fv_5"],
+        "createdAt": "2026-02-28T08:00:00Z"
+      }],
+      ["entity_2", {
+        "id": "entity_2",
+        "type": "entity",
+        "name": "HealthcareProvider",
+        "joinKey": "provider_hash_id",
+        "description": "Clinical staff and healthcare providers with role-based aggregation",
+        "tags": ["workforce", "provider", "operational"],
+        "details": {
+          "notes": "Provider types: Physician, Nurse, Specialist\nAggregation: Experience levels, not individual identifiers\nHPCSA: Registration status verified\nWorkload: Patient ratios for resource planning\nRetention: Employment record + 7 years"
+        },
+        "x": 400, "y": 250,
+        "inputs": [],
+        "outputs": ["fv_3"],
+        "createdAt": "2026-02-28T08:00:00Z"
+      }],
+      ["entity_3", {
+        "id": "entity_3",
+        "type": "entity",
+        "name": "MedicalEpisode",
+        "joinKey": "episode_hash_id",
+        "description": "Hospital admissions and clinical episodes with DRG classification",
+        "tags": ["clinical", "episode", "drg-classified"],
+        "details": {
+          "notes": "Episode types: Inpatient, Outpatient, Emergency\nDRG: Diagnosis-Related Group classification\nLength of stay: Primary outcome variable\nReadmission: 30-day flag for ML target\nCost: Standardized cost weights"
+        },
+        "x": 400, "y": 400,
+        "inputs": [],
+        "outputs": ["fv_2", "fv_4"],
+        "createdAt": "2026-02-28T08:00:00Z"
+      }],
+      ["entity_4", {
+        "id": "entity_4",
+        "type": "entity",
+        "name": "TreatmentProtocol",
+        "joinKey": "protocol_hash_id",
+        "description": "Standardized treatment protocols and clinical pathways",
+        "tags": ["protocol", "clinical-pathway", "evidence-based"],
+        "details": {
+          "notes": "Protocols: Evidence-based guidelines\nAdherence: Protocol deviation tracking\nOutcomes: Expected vs actual results\nSpecialties: Medical, Surgical, ICU\nVersion: Protocol version control"
+        },
+        "x": 400, "y": 550,
+        "inputs": [],
+        "outputs": ["fv_4"],
+        "createdAt": "2026-02-28T08:00:00Z"
+      }],
+      ["fv_1", {
+        "id": "fv_1",
+        "type": "featureview",
+        "name": "PatientRiskProfile",
+        "subtype": "batch",
+        "description": "Patient comorbidity and risk stratification features",
+        "tags": ["clinical", "risk", "popia-health", "comorbidity"],
+        "entities": ["entity_1"],
+        "features": [
+          {"name": "age_band", "type": "String"},
+          {"name": "charlson_comorbidity_index", "type": "Int64"},
+          {"name": "elixhauser_score", "type": "Int64"},
+          {"name": "frailty_indicator", "type": "String"},
+          {"name": "social_determinants_score", "type": "Float32"}
+        ],
+        "details": {
+          "ttl": "86400",
+          "notes": "POPIA: Aggregated clinical indicators only\nComorbidity: ICD-10 coded, aggregated\nSource: SQL Server EHR\nExplainability: Clinical feature importance logged\nHPCSA: Evidence-based risk scores only"
+        },
+        "x": 700, "y": 100,
+        "inputs": ["entity_1"],
+        "outputs": ["service_1", "service_2"],
+        "createdAt": "2026-02-28T08:00:00Z"
+      }],
+      ["fv_2", {
+        "id": "fv_2",
+        "type": "featureview",
+        "name": "EpisodeOutcomeFeatures",
+        "subtype": "batch",
+        "description": "Hospital episode outcomes and readmission risk factors",
+        "tags": ["outcomes", "readmission", "drg", "ml-target"],
+        "entities": ["entity_3"],
+        "features": [
+          {"name": "length_of_stay_days", "type": "Int64"},
+          {"name": "drg_weight", "type": "Float32"},
+          {"name": "icu_flag", "type": "Bool"},
+          {"name": "discharge_disposition", "type": "String"},
+          {"name": "readmission_30d_risk_score", "type": "Float32"}
+        ],
+        "details": {
+          "ttl": "604800",
+          "notes": "Target variable: 30-day readmission\nDRG: Case mix adjustment\nSource: MySQL admin + SQL Server clinical\nValidation: Outcome accuracy audited\nPOPIA: Aggregate statistics only"
+        },
+        "x": 700, "y": 250,
+        "inputs": ["entity_3"],
+        "outputs": ["service_1"],
+        "createdAt": "2026-02-28T08:00:00Z"
+      }],
+      ["fv_3", {
+        "id": "fv_3",
+        "type": "featureview",
+        "name": "ProviderWorkloadFeatures",
+        "subtype": "batch",
+        "description": "Healthcare provider workload and experience features for resource planning",
+        "tags": ["workforce", "workload", "resource-planning"],
+        "entities": ["entity_2"],
+        "features": [
+          {"name": "provider_experience_band", "type": "String"},
+          {"name": "current_caseload", "type": "Int64"},
+          {"name": "specialty_demand_index", "type": "Float32"},
+          {"name": "shift_pattern_type", "type": "String"},
+          {"name": "burnout_risk_indicator", "type": "Float32"}
+        ],
+        "details": {
+          "ttl": "14400",
+          "notes": "Aggregation: Band levels, no individual workload\nSource: MySQL admin systems\nRefresh: Every 4 hours for staffing\nHPCSA: Workload guidelines compliance\nPrivacy: Provider anonymity preserved"
+        },
+        "x": 700, "y": 400,
+        "inputs": ["entity_2"],
+        "outputs": ["service_2"],
+        "createdAt": "2026-02-28T08:00:00Z"
+      }],
+      ["fv_4", {
+        "id": "fv_4",
+        "type": "featureview",
+        "name": "ProtocolAdherenceFeatures",
+        "subtype": "batch",
+        "description": "Treatment protocol adherence and pathway compliance",
+        "tags": ["protocol", "adherence", "quality", "clinical-pathway"],
+        "entities": ["entity_3", "entity_4"],
+        "features": [
+          {"name": "protocol_adherence_percentage", "type": "Float32"},
+          {"name": "deviation_count", "type": "Int64"},
+          {"name": "pathway_completion_flag", "type": "Bool"},
+          {"name": "expected_outcome_achievement", "type": "String"}
+        ],
+        "details": {
+          "ttl": "86400",
+          "notes": "Protocol: Evidence-based guideline compliance\nSource: SQL Server EHR + PostgreSQL registry\nQuality: Clinical quality indicators\nResearch: Protocol effectiveness studies\nHPCSA: Standard of care monitoring"
+        },
+        "x": 700, "y": 550,
+        "inputs": ["entity_3", "entity_4"],
+        "outputs": ["service_1"],
+        "createdAt": "2026-02-28T08:00:00Z"
+      }],
+      ["fv_5", {
+        "id": "fv_5",
+        "type": "featureview",
+        "name": "NLPClinicalFeatures",
+        "subtype": "batch",
+        "description": "NLP-extracted features from clinical notes with de-identification",
+        "tags": ["nlp", "unstructured", "clinical-text", "popia-health"],
+        "entities": ["entity_1"],
+        "features": [
+          {"name": "sentiment_score", "type": "Float32"},
+          {"name": "symptom_mention_count", "type": "Int64"},
+          {"name": "medication_adherence_mention", "type": "Bool"},
+          {"name": "social_support_indicator", "type": "String"}
+        ],
+        "details": {
+          "ttl": "86400",
+          "notes": "NLP: Clinical BERT model\nDe-identification: Before NLP processing\nSource: MongoDB notes\nPOPIA: Section 26 text data authorization\nHPCSA: Clinical documentation standards"
+        },
+        "x": 700, "y": 700,
+        "inputs": ["entity_1"],
+        "outputs": ["service_1"],
+        "createdAt": "2026-02-28T08:00:00Z"
+      }],
+      ["service_1", {
+        "id": "service_1",
+        "type": "service",
+        "name": "ClinicalPredictionModelTraining",
+        "description": "Training data service for clinical outcome prediction models",
+        "tags": ["clinical-ml", "outcomes", "popia-health", "hpcsa-governed"],
+        "features": ["fv_1", "fv_2", "fv_4", "fv_5"],
+        "featureServices": [],
+        "details": {
+          "usedBy": [
+            {
+              "name": "clinical-data-scientists",
+              "environment": "Secure Research Environment",
+              "sla": "Best effort",
+              "contact": "clinical-ml@hospital",
+              "description": "Readmission risk and outcome prediction model development"
+            },
+            {
+              "name": "biostatistics-team",
+              "environment": "Secure Research Environment",
+              "sla": "99%",
+              "contact": "biostats@hospital",
+              "description": "Statistical validation and clinical trial analysis"
+            }
+          ],
+          "notes": "Purpose: Clinical outcome prediction\nGovernance: HPCSA + POPIA Section 26\nData: De-identified, no re-identification possible\nExplainability: Clinical decision support requires interpretability\nAudit: Full lineage for clinical governance\nSecurity: Secure research environment only"
+        },
+        "x": 1000, "y": 300,
+        "inputs": ["fv_1", "fv_2", "fv_4", "fv_5"],
+        "outputs": [],
+        "createdAt": "2026-02-28T08:00:00Z"
+      }],
+      ["service_2", {
+        "id": "service_2",
+        "type": "service",
+        "name": "HospitalResourceOptimization",
+        "description": "ML training data for hospital resource planning and workforce optimization",
+        "tags": ["operations", "workforce", "resource-planning", "popia-compliant"],
+        "features": ["fv_1", "fv_3"],
+        "featureServices": [],
+        "details": {
+          "usedBy": [
+            {
+              "name": "operations-research-team",
+              "environment": "Development",
+              "sla": "95%",
+              "contact": "ops-research@hospital",
+              "description": "Bed management and staffing optimization models"
+            },
+            {
+              "name": "nursing-administration",
+              "environment": "Production",
+              "sla": "99%",
+              "contact": "nursing-admin@hospital",
+              "description": "Workload balancing and burnout prevention analytics"
+            }
+          ],
+          "notes": "Purpose: Operational efficiency, not clinical decisions\nPOPIA: Workforce data, not patient identifiable\nAggregation: All features banded/anonymized\nHPCSA: Not clinical decision support\nValidation: Operational metrics only"
+        },
+        "x": 1000, "y": 600,
+        "inputs": ["fv_1", "fv_3"],
+        "outputs": [],
+        "createdAt": "2026-02-28T08:00:00Z"
+      }]
+    ],
+    "edges": [
+      {"from": "entity_1", "to": "fv_1", "id": "entity_1->fv_1", "animated": false},
+      {"from": "entity_1", "to": "fv_5", "id": "entity_1->fv_5", "animated": false},
+      {"from": "entity_2", "to": "fv_3", "id": "entity_2->fv_3", "animated": false},
+      {"from": "entity_3", "to": "fv_2", "id": "entity_3->fv_2", "animated": false},
+      {"from": "entity_3", "to": "fv_4", "id": "entity_3->fv_4", "animated": false},
+      {"from": "entity_4", "to": "fv_4", "id": "entity_4->fv_4", "animated": false},
+      {"from": "fv_1", "to": "service_1", "id": "fv_1->service_1", "animated": false},
+      {"from": "fv_1", "to": "service_2", "id": "fv_1->service_2", "animated": false},
+      {"from": "fv_2", "to": "service_1", "id": "fv_2->service_1", "animated": false},
+      {"from": "fv_3", "to": "service_2", "id": "fv_3->service_2", "animated": false},
+      {"from": "fv_4", "to": "service_1", "id": "fv_4->service_1", "animated": false},
+      {"from": "fv_5", "to": "service_1", "id": "fv_5->service_1", "animated": false}
+    ],
+    "exportDate": "2026-02-28T10:00:00Z",
+    "version": "3.0"
+  }

@@ -1,0 +1,434 @@
+{
+    "repository": {
+      "name": "telecom_customer_churn_ml",
+      "location": "/opt/feast/telecom_churn",
+      "defaultOwner": "Customer Analytics Team",
+      "id": 5,
+      "description": "Telecommunications customer churn prediction and lifetime value optimization. POPIA-compliant with ICASA (Independent Communications Authority of SA) consumer protection alignment. Uses MSSQL (billing and CRM), MySQL (network operations), MongoDB (customer interactions), PostgreSQL (product catalog), and S3 (call detail records). 4 entities: Subscriber, MobileDevice, ServicePlan, and NetworkSession. Supports ML models for churn prediction, upsell targeting, and network experience optimization with full explainability and fairness monitoring."
+    },
+    "nodes": [
+      ["source_1", {
+        "id": "source_1",
+        "type": "datasource",
+        "name": "Billing and CRM SQL Server",
+        "kind": "sqlserver",
+        "dbType": {
+          "name": "SQL Server",
+          "category": "Relational",
+          "debezium": true,
+          "icon": "🗃️",
+          "defaultProcess": "Customer analytics governance approval",
+          "sparkPattern": "MS JDBC with Always Encrypted for payment data"
+        },
+        "description": "Customer master data, billing history, payments, and CRM interactions",
+        "tags": ["crm", "billing", "popia-sensitive", "icasa-governed"],
+        "ownedBy": "CRM Data Team",
+        "accessProcess": "1. Customer analytics governance approval\n2. POPIA direct marketing consent verification\n3. ICASA consumer protection compliance check\n4. SQL Server read replica with audit\n5. Payment card industry (PCI) scoping review",
+        "details": {
+          "connection": "sqlserver://crm.telecom.local:1433/BillingDB",
+          "notes": "Debezium for billing event streaming\nPOPIA: Direct marketing opt-in required\nICASA: Consumer protection regulations\nPCI: Payment data tokenized, not in features\nEncryption: Always Encrypted for sensitive fields\nRetention: Account lifetime + 5 years"
+        },
+        "x": 100, "y": 100,
+        "inputs": [], "outputs": [],
+        "createdAt": "2026-02-28T08:00:00Z",
+        "debeziumAvailable": true,
+        "sparkPattern": "MS JDBC with Always Encrypted for payment data",
+        "columnSecurity": {
+          "piiColumns": ["sa_id_number", "passport_number", "cellphone_number", "email_address", "physical_address"],
+          "maskedColumns": ["cellphone_number", "email_address"],
+          "restrictedColumns": ["sa_id_number", "passport_number", "payment_card_tokens", "credit_score_details"]
+        }
+      }],
+      ["source_2", {
+        "id": "source_2",
+        "type": "datasource",
+        "name": "Network Operations MySQL",
+        "kind": "mysql",
+        "dbType": {
+          "name": "MySQL",
+          "category": "Relational",
+          "debezium": true,
+          "icon": "🐬",
+          "defaultProcess": "Network analytics access with NOC approval",
+          "sparkPattern": "JDBC with SSL and network data aggregation"
+        },
+        "description": "Network performance, cell tower data, and service quality metrics",
+        "tags": ["network", "operations", "qos", "technical"],
+        "ownedBy": "Network Operations Center",
+        "accessProcess": "1. NOC manager approval for customer analytics\n2. Network data privacy review\n3. MySQL read replica with SSL\n4. Aggregation requirements (no individual CDRs)",
+        "details": {
+          "connection": "mysql://noc.telecom.local:3306/network_ops",
+          "notes": "Percona with performance monitoring\nDebezium for network event alerts\nData: Aggregated QoS scores, not individual CDRs\nICASA: QoS reporting compliance\nRetention: 90 days raw, 2 years aggregated\nPrivacy: Location approximated to cell area"
+        },
+        "x": 100, "y": 250,
+        "inputs": [], "outputs": [],
+        "createdAt": "2026-02-28T08:00:00Z",
+        "debeziumAvailable": true,
+        "sparkPattern": "JDBC with SSL and network data aggregation",
+        "columnSecurity": {
+          "piiColumns": ["imei_number", "imsi_number", "cell_tower_location"],
+          "maskedColumns": ["imei_number", "imsi_number"],
+          "restrictedColumns": ["exact_location_data", "call_detail_records"]
+        }
+      }],
+      ["source_3", {
+        "id": "source_3",
+        "type": "datasource",
+        "name": "Customer Interaction MongoDB",
+        "kind": "mongodb",
+        "dbType": {
+          "name": "MongoDB",
+          "category": "NoSQL",
+          "debezium": true,
+          "icon": "🍃",
+          "defaultProcess": "Customer experience team data access",
+          "sparkPattern": "MongoDB Spark with sentiment analysis pipeline"
+        },
+        "description": "Call centre logs, chat transcripts, app interactions, and complaint records",
+        "tags": ["interaction", "channel", "sentiment", "service"],
+        "ownedBy": "Customer Experience Team",
+        "accessProcess": "1. Customer experience director approval\n2. POPIA consent for interaction analysis\n3. MongoDB read-only access\n4. Sentiment analysis data handling review",
+        "details": {
+          "connection": "mongodb://cx.telecom.local:27017/interactions",
+          "notes": "Change streams for real-time sentiment\nNLP: Sentiment and intent classification\nPOPIA: Interaction data with consent\nRetention: 2 years for analytics\nVoice: Call recordings separate, not in features"
+        },
+        "x": 100, "y": 400,
+        "inputs": [], "outputs": [],
+        "createdAt": "2026-02-28T08:00:00Z",
+        "debeziumAvailable": true,
+        "sparkPattern": "MongoDB Spark with sentiment analysis pipeline",
+        "columnSecurity": {
+          "piiColumns": ["transcript_text", "agent_name", "customer_name_mention"],
+          "maskedColumns": ["agent_name"],
+          "restrictedColumns": ["raw_chat_logs", "voice_recording_refs"]
+        }
+      }],
+      ["source_4", {
+        "id": "source_4",
+        "type": "datasource",
+        "name": "Product Catalog PostgreSQL",
+        "kind": "postgres",
+        "dbType": {
+          "name": "PostgreSQL",
+          "category": "Relational",
+          "debezium": true,
+          "icon": "🐘",
+          "defaultProcess": "Product team data access approval",
+          "sparkPattern": "JDBC with row-level security for product tiers"
+        },
+        "description": "Mobile plans, data bundles, device offerings, and pricing structures",
+        "tags": ["product", "catalog", "pricing", "non-pii"],
+        "ownedBy": "Product Management Team",
+        "accessProcess": "1. Product strategy approval\n2. Competitive sensitivity review\n3. PostgreSQL access with RLS\n4. Pricing data confidentiality agreement",
+        "details": {
+          "connection": "postgresql://product.telecom.local:5432/catalog",
+          "notes": "Row-level security: Product tier access\nDebezium: Product change notifications\nData: Product attributes, no customer data\nRetention: Product lifecycle + 3 years\nCompetitive: Confidential pricing strategies"
+        },
+        "x": 100, "y": 550,
+        "inputs": [], "outputs": [],
+        "createdAt": "2026-02-28T08:00:00Z",
+        "debeziumAvailable": true,
+        "sparkPattern": "JDBC with row-level security for product tiers",
+        "columnSecurity": {
+          "piiColumns": [],
+          "maskedColumns": [],
+          "restrictedColumns": ["cost_price", "margin_structure", "promotional_budget"]
+        }
+      }],
+      ["source_5", {
+        "id": "source_5",
+        "type": "datasource",
+        "name": "Call Detail Records S3",
+        "kind": "s3",
+        "dbType": {
+          "name": "Amazon S3 (Parquet)",
+          "category": "Object Storage",
+          "debezium": false,
+          "icon": "🪣",
+          "defaultProcess": "Regulatory compliance and analytics governance",
+          "sparkPattern": "S3A with CDR aggregation and anonymization"
+        },
+        "description": "Aggregated call detail records and usage patterns for churn modeling",
+        "tags": ["cdr", "usage", "aggregated", "high-volume"],
+        "ownedBy": "Data Science Platform Team",
+        "accessProcess": "1. Legal and regulatory compliance review\n2. ICASA data retention verification\n3. POPIA minimization assessment\n4. S3 access with aggregation requirements\n5. No individual CDRs accessible",
+        "details": {
+          "connection": "s3://telecom-cdr-lake/aggregated/",
+          "notes": "Aggregation: Daily summaries, not individual calls\nAnonymization: Subscriber IDs hashed\nICASA: Regulatory retention compliance\nRetention: 5 years per regulations\nAccess: Aggregated features only, no raw CDRs\nPrivacy: Location cell-level, not GPS"
+        },
+        "x": 100, "y": 700,
+        "inputs": [], "outputs": [],
+        "createdAt": "2026-02-28T08:00:00Z",
+        "debeziumAvailable": false,
+        "sparkPattern": "S3A with CDR aggregation and anonymization",
+        "columnSecurity": {
+          "piiColumns": ["subscriber_id", "called_numbers", "location_data"],
+          "maskedColumns": [],
+          "restrictedColumns": ["raw_cdr_fields", "content_of_communications"]
+        }
+      }],
+      ["entity_1", {
+        "id": "entity_1",
+        "type": "entity",
+        "name": "Subscriber",
+        "joinKey": "subscriber_hash_id",
+        "description": "Mobile subscribers with POPIA consent management and churn labels",
+        "tags": ["core", "popia-data-subject", "icasa-consumer"],
+        "details": {
+          "notes": "POPIA: Direct marketing consent (opt-in)\nICASA: Consumer protection rights\nPseudonymization: Hash ID for analytics\nChurn: Label for ML training (active/lapsed)\nTenure: Account age and loyalty\nRetention: Account closure + 5 years"
+        },
+        "x": 400, "y": 100,
+        "inputs": [],
+        "outputs": ["fv_1", "fv_2", "fv_5"],
+        "createdAt": "2026-02-28T08:00:00Z"
+      }],
+      ["entity_2", {
+        "id": "entity_2",
+        "type": "entity",
+        "name": "MobileDevice",
+        "joinKey": "device_hash_id",
+        "description": "Mobile devices and handsets with technical capabilities",
+        "tags": ["device", "technical", "iot", "non-pii"],
+        "details": {
+          "notes": "Device types: Smartphone, Feature phone, IoT\nCapabilities: 4G/5G, VoLTE, WiFi calling\nTAC: Type Allocation Code for device model\nUpgrade: Eligibility and propensity\nNo PII: Device attributes only"
+        },
+        "x": 400, "y": 250,
+        "inputs": [],
+        "outputs": ["fv_3"],
+        "createdAt": "2026-02-28T08:00:00Z"
+      }],
+      ["entity_3", {
+        "id": "entity_3",
+        "type": "entity",
+        "name": "ServicePlan",
+        "joinKey": "plan_code",
+        "description": "Subscription plans, bundles, and pricing tiers",
+        "tags": ["product", "subscription", "pricing", "catalog"],
+        "details": {
+          "notes": "Plan types: Prepaid, Postpaid, Hybrid\nBundles: Data, Voice, SMS combinations\nPricing: ARPU and margin analysis\nChurn: Plan-specific retention rates\nCompetitive: Market positioning"
+        },
+        "x": 400, "y": 400,
+        "inputs": [],
+        "outputs": ["fv_4"],
+        "createdAt": "2026-02-28T08:00:00Z"
+      }],
+      ["entity_4", {
+        "id": "entity_4",
+        "type": "entity",
+        "name": "NetworkSession",
+        "joinKey": "session_hash_id",
+        "description": "Network usage sessions with quality of service metrics",
+        "tags": ["network", "session", "qos", "technical"],
+        "details": {
+          "notes": "Session types: Data, Voice, SMS\nQoS: Quality of service scores\nLocation: Cell tower area (not exact)\nTime: Time of day, day of week patterns\nAggregation: No individual session details"
+        },
+        "x": 400, "y": 550,
+        "inputs": [],
+        "outputs": ["fv_3", "fv_5"],
+        "createdAt": "2026-02-28T08:00:00Z"
+      }],
+      ["fv_1", {
+        "id": "fv_1",
+        "type": "featureview",
+        "name": "SubscriberLifecycleFeatures",
+        "subtype": "batch",
+        "description": "Subscriber tenure, loyalty, and lifecycle stage features",
+        "tags": ["lifecycle", "tenure", "loyalty", "churn-target"],
+        "entities": ["entity_1"],
+        "features": [
+          {"name": "tenure_months_band", "type": "String"},
+          {"name": "contract_type", "type": "String"},
+          {"name": "payment_method_stability", "type": "String"},
+          {"name": "autopay_enrollment_flag", "type": "Bool"},
+          {"name": "customer_lifetime_value_band", "type": "String"},
+          {"name": "churn_risk_score_current", "type": "Float32"}
+        ],
+        "details": {
+          "ttl": "86400",
+          "notes": "Source: SQL Server CRM\nPOPIA: Consent for marketing analytics\nChurn: Target variable for ML models\nICASA: Consumer protection in retention offers\nExplainability: Lifecycle stage transparency\nFairness: No discriminatory pricing"
+        },
+        "x": 700, "y": 100,
+        "inputs": ["entity_1"],
+        "outputs": ["service_1", "service_2"],
+        "createdAt": "2026-02-28T08:00:00Z"
+      }],
+      ["fv_2", {
+        "id": "fv_2",
+        "type": "featureview",
+        "name": "BillingBehaviourFeatures",
+        "subtype": "batch",
+        "description": "Payment patterns, billing disputes, and spend behavior",
+        "tags": ["billing", "payment", "behavior", "financial"],
+        "entities": ["entity_1"],
+        "features": [
+          {"name": "payment_punctuality_score", "type": "Float32"},
+          {"name": "average_monthly_spend_band", "type": "String"},
+          {"name": "billing_dispute_count_6m", "type": "Int64"},
+          {"name": "payment_method_change_frequency", "type": "String"},
+          {"name": "arpu_trend_direction", "type": "String"}
+        ],
+        "details": {
+          "ttl": "86400",
+          "notes": "Source: SQL Server billing\nAggregation: Spend bands, not exact amounts\nPOPIA: Financial data protection\nICASA: Billing accuracy requirements\nExplainability: Payment behavior factors\nTarget: Upsell eligibility and churn risk"
+        },
+        "x": 700, "y": 250,
+        "inputs": ["entity_1"],
+        "outputs": ["service_1"],
+        "createdAt": "2026-02-28T08:00:00Z"
+      }],
+      ["fv_3", {
+        "id": "fv_3",
+        "type": "featureview",
+        "name": "NetworkExperienceFeatures",
+        "subtype": "stream",
+        "description": "Network quality of service and device experience features",
+        "tags": ["network", "qos", "device", "technical"],
+        "entities": ["entity_2", "entity_4"],
+        "features": [
+          {"name": "average_data_speed_experience", "type": "String"},
+          {"name": "call_drop_rate_experience", "type": "Float32"},
+          {"name": "network_congestion_exposure", "type": "String"},
+          {"name": "device_capability_match", "type": "String"},
+          {"name": "roaming_usage_flag", "type": "Bool"}
+        ],
+        "details": {
+          "ttl": "7200",
+          "notes": "Source: MySQL NOC + MongoDB interactions\nAggregation: Experience scores, not raw metrics\nICASA: QoS regulatory reporting\nReal-time: Network issue alerts\nChurn: Service quality driver analysis\nPrivacy: Location cell-level only"
+        },
+        "x": 700, "y": 400,
+        "inputs": ["entity_2", "entity_4"],
+        "outputs": ["service_1", "service_2"],
+        "createdAt": "2026-02-28T08:00:00Z"
+      }],
+      ["fv_4", {
+        "id": "fv_4",
+        "type": "featureview",
+        "name": "ProductEngagementFeatures",
+        "subtype": "batch",
+        "description": "Service plan utilization and product engagement metrics",
+        "tags": ["product", "engagement", "utilization", "upsell"],
+        "entities": ["entity_3"],
+        "features": [
+          {"name": "plan_utilization_rate", "type": "Float32"},
+          {"name": "data_overage_frequency", "type": "String"},
+          {"name": "bundle_affinity_score", "type": "Float32"},
+          {"name": "plan_change_frequency", "type": "String"},
+          {"name": "value_added_service_uptake", "type": "Int64"}
+        ],
+        "details": {
+          "ttl": "86400",
+          "notes": "Source: PostgreSQL catalog + SQL Server usage\nEngagement: Product stickiness indicators\nUpsell: Propensity model features\nICASA: Transparent pricing compliance\nExplainability: Plan recommendation reasons\nRetention: Plan optimization suggestions"
+        },
+        "x": 700, "y": 550,
+        "inputs": ["entity_3"],
+        "outputs": ["service_2"],
+        "createdAt": "2026-02-28T08:00:00Z"
+      }],
+      ["fv_5", {
+        "id": "fv_5",
+        "type": "featureview",
+        "name": "InteractionSentimentFeatures",
+        "subtype": "stream",
+        "description": "Customer interaction sentiment and service experience features",
+        "tags": ["sentiment", "interaction", "service", "nlp"],
+        "entities": ["entity_1", "entity_4"],
+        "features": [
+          {"name": "recent_sentiment_score", "type": "Float32"},
+          {"name": "complaint_escalation_flag", "type": "Bool"},
+          {"name": "service_call_frequency_30d", "type": "Int64"},
+          {"name": "digital_channel_adoption_score", "type": "Float32"},
+          {"name": "satisfaction_prediction", "type": "String"}
+        ],
+        "details": {
+          "ttl": "3600",
+          "notes": "Source: MongoDB interactions + S3 CDR\nNLP: Sentiment analysis on transcripts\nReal-time: Complaint escalation alerts\nPOPIA: Interaction consent verified\nICASA: Complaint handling compliance\nChurn: Service recovery opportunity scoring"
+        },
+        "x": 700, "y": 700,
+        "inputs": ["entity_1", "entity_4"],
+        "outputs": ["service_1"],
+        "createdAt": "2026-02-28T08:00:00Z"
+      }],
+      ["service_1", {
+        "id": "service_1",
+        "type": "service",
+        "name": "ChurnPredictionModelTraining",
+        "description": "Training data service for customer churn prediction and retention targeting",
+        "tags": ["churn", "retention", "prediction", "explainable"],
+        "features": ["fv_1", "fv_2", "fv_3", "fv_5"],
+        "featureServices": [],
+        "details": {
+          "usedBy": [
+            {
+              "name": "customer-analytics-data-scientists",
+              "environment": "Development",
+              "sla": "Best effort",
+              "contact": "customer-ml@telecom",
+              "description": "Churn prediction model development and validation"
+            },
+            {
+              "name": "retention-marketing-team",
+              "environment": "UAT",
+              "sla": "99%",
+              "contact": "retention@telecom",
+              "description": "Targeted retention campaign optimization"
+            }
+          ],
+          "notes": "Purpose: Churn prevention and customer retention\nPOPIA: Direct marketing consent verified\nICASA: Consumer protection in retention offers\nExplainability: Churn risk factors communicated to agents\nFairness: No discriminatory retention offers\nModels: Gradient boosting, Neural networks, Survival analysis\nTarget: 30/60/90-day churn probability"
+        },
+        "x": 1000, "y": 300,
+        "inputs": ["fv_1", "fv_2", "fv_3", "fv_5"],
+        "outputs": [],
+        "createdAt": "2026-02-28T08:00:00Z"
+      }],
+      ["service_2", {
+        "id": "service_2",
+        "type": "service",
+        "name": "CustomerValueOptimization",
+        "description": "ML training data for upsell, cross-sell, and lifetime value optimization",
+        "tags": ["upsell", "cross-sell", "ltv", "product-recommendation"],
+        "features": ["fv_1", "fv_3", "fv_4"],
+        "featureServices": [],
+        "details": {
+          "usedBy": [
+            {
+              "name": "product-marketing-team",
+              "environment": "Production",
+              "sla": "99%",
+              "contact": "product-marketing@telecom",
+              "description": "Next-best-offer and plan upgrade recommendations"
+            },
+            {
+              "name": "digital-sales-team",
+              "environment": "Production",
+              "sla": "99%",
+              "contact": "digital-sales@telecom",
+              "description": "Online upsell and bundle recommendations"
+            }
+          ],
+          "notes": "Purpose: Revenue optimization through relevant offers\nPOPIA: Marketing consent and purpose limitation\nICASA: Transparent pricing and fair treatment\nExplainability: Offer relevance reasoning\nFairness: Equal access to offers, no discrimination\nModels: Collaborative filtering, Uplift modeling, LTV prediction\nEthics: No vulnerable customer exploitation"
+        },
+        "x": 1000, "y": 600,
+        "inputs": ["fv_1", "fv_3", "fv_4"],
+        "outputs": [],
+        "createdAt": "2026-02-28T08:00:00Z"
+      }]
+    ],
+    "edges": [
+      {"from": "entity_1", "to": "fv_1", "id": "entity_1->fv_1", "animated": false},
+      {"from": "entity_1", "to": "fv_2", "id": "entity_1->fv_2", "animated": false},
+      {"from": "entity_1", "to": "fv_5", "id": "entity_1->fv_5", "animated": false},
+      {"from": "entity_2", "to": "fv_3", "id": "entity_2->fv_3", "animated": false},
+      {"from": "entity_3", "to": "fv_4", "id": "entity_3->fv_4", "animated": false},
+      {"from": "entity_4", "to": "fv_3", "id": "entity_4->fv_3", "animated": false},
+      {"from": "entity_4", "to": "fv_5", "id": "entity_4->fv_5", "animated": false},
+      {"from": "fv_1", "to": "service_1", "id": "fv_1->service_1", "animated": false},
+      {"from": "fv_1", "to": "service_2", "id": "fv_1->service_2", "animated": false},
+      {"from": "fv_2", "to": "service_1", "id": "fv_2->service_1", "animated": false},
+      {"from": "fv_3", "to": "service_1", "id": "fv_3->service_1", "animated": false},
+      {"from": "fv_3", "to": "service_2", "id": "fv_3->service_2", "animated": false},
+      {"from": "fv_4", "to": "service_2", "id": "fv_4->service_2", "animated": false},
+      {"from": "fv_5", "to": "service_1", "id": "fv_5->service_1", "animated": false}
+    ],
+    "exportDate": "2026-02-28T10:00:00Z",
+    "version": "3.0"
+  }
