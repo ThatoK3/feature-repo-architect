@@ -1,4 +1,6 @@
-{% extends 'SecureGate/base.html' %} {% block topnav %}
+{% extends 'SecureGate/base.html' %}
+
+{% block topnav %}
 <nav class="text-on-line">
   <div class="nav-brand-image">
     <span>
@@ -15,131 +17,216 @@
     <li class="link" onclick="submitLogout()"><a>Logout</a></li>
   </ul>
 </nav>
-  {% endblock %} {% block content %}
-  <form class="myform100-form">
-    {% csrf_token %}
+{% endblock %}
 
+{% block content %}
+<form class="myform100-form">
+  {% csrf_token %}
 
+  <div class="app-selector-wrapper" style="margin-bottom: 25px; position: relative;">
+    <div class="custom-select" id="customSelect" style="position: relative;">
+      <div class="select-trigger input" id="selectTrigger" style="cursor: pointer; padding: 8px 12px; background: #f7e9f6; border-radius: 9px; border: 1px solid #ccc;">
+        Choose application
+      </div>
+      <div class="select-options" id="selectOptions" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #ccc; border-radius: 9px; margin-top: 4px; max-height: 200px; overflow-y: auto; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+      </div>
+    </div>
+    
+    <select name="application-name" id="appSelector" style="display: none;">
+      <option value="" selected disabled>Choose application</option>
+    </select>
+    
+    <div id="appTooltip" class="app-hover-tooltip" style="display: none; position: absolute; right: 100%; top: 50px; width: 300px; margin-right: 20px; background: #fff; border: 1px solid #004b8d; border-radius: 10px; padding: 15px; box-shadow: 0 8px 25px rgba(0,75,141,0.25); z-index: 100;">
+      <h4 id="tooltipName" style="margin: 0 0 8px 0; color: #004b8d; font-size: 15px; font-weight: 600; border-bottom: 2px solid #cadeff; padding-bottom: 8px;"></h4>
+      <p id="tooltipDesc" style="margin: 0 0 10px 0; color: #444; font-size: 12px; line-height: 1.4; max-height: 150px; overflow-y: auto;"></p>
+      <div id="tooltipMeta" style="font-size: 11px; color: #666; background: #f5f8ff; padding: 8px; border-radius: 6px; margin-top: 8px;">
+      </div>
+    </div>
+  </div>
 
-
-
-    <select name="application-name" id="appSelector" style="margin-bottom: 25px" class="input" onchange="handleAppSelect(this.value)">
-    <option value="" selected disabled>Choose application</option>
-    <option value="feast-ui">Feast Feature Store</option>
-    <option value="datahub">DataHub Catalog</option>
-    <option value="mlflow">MLflow Tracking</option>
-    <option value="jupyter">Jupyter Hub</option>
-    <option value="airflow">Airflow Pipelines</option>
-    <option value="grafana">Grafana Monitoring</option>
-</select>
-
-<select name="application-team" id="teamSelector" class="input" style="margin-bottom: 25px; display: none;">
-    <option value="" selected disabled>Choose team</option>
-    <option value="data-platform">Data Platform</option>
-    <option value="ml-platform">ML Platform</option>
-    <option value="analytics">Analytics</option>
-    <option value="data-science">Data Science</option>
-    <option value="engineering">Engineering</option>
-</select>
-
-<div class="container-myform100-form-btn">
-    <button
-        type="button"
-        id="openAppBtn"
-        style="margin-bottom: 80px; margin-top: 30px"
-        class="myform100-form-btn"
-        onclick="openApplication()"
-        disabled
-    >
-        Open Application
+  <div class="container-myform100-form-btn">
+    <button type="button" id="openAppBtn" style="margin-bottom: 80px; margin-top: 30px" class="myform100-form-btn" onclick="openApplication()" disabled>
+      Open Application
     </button>
-</div>
+  </div>
+
+  <div class="text-center p-t-136">
+    <a onclick="" class="txt2" href="./logaticket">
+      Request access/ report an issue
+      <i class="fa fa-long-arrow-right m-l-5" aria-hidden="true"></i>
+    </a>
+  </div>
+</form>
+
+<style>
+  .custom-select .option { padding: 10px 12px; cursor: pointer; border-bottom: 1px solid #eee; font-size: 14px; color: #333; }
+  .custom-select .option:hover { background: #cadeff; color: #004b8d; }
+  .custom-select .option:last-child { border-bottom: none; }
+  .custom-select .option.selected { background: #004b8d; color: #fff; }
+</style>
 
 <script>
-const appRoutes = {
-    'feast-ui': '/feast-ui/',
-    'datahub': '/datahub/',
-    'mlflow': '/mlflow/',
-    'jupyter': '/jupyter/',
-    'airflow': '/airflow/',
-    'grafana': '/grafana/'
-};
+let applicationsData = [];
+let selectedAppId = null;
+let isDropdownOpen = false;
 
-const teamRequirements = ['feast-ui', 'datahub', 'mlflow'];
-
-function handleAppSelect(appValue) {
-    const teamSelector = document.getElementById('teamSelector');
-    const openBtn = document.getElementById('openAppBtn');
-    
-    if (!appValue) {
-        openBtn.disabled = true;
-        teamSelector.style.display = 'none';
-        return;
-    }
-    
-    // Show team selector for specific apps
-    if (teamRequirements.includes(appValue)) {
-        teamSelector.style.display = 'block';
-        teamSelector.value = ''; // Reset team selection
-        openBtn.disabled = true;
-    } else {
-        teamSelector.style.display = 'none';
-        openBtn.disabled = false;
-    }
-    
-    // Auto-redirect for Feast UI (first option)
-    if (appValue === 'feast-ui') {
-        // Optional: auto-redirect immediately or wait for team selection
-        // window.location.href = appRoutes[appValue];
-    }
-}
-
-document.getElementById('teamSelector').addEventListener('change', function() {
-    const openBtn = document.getElementById('openAppBtn');
-    openBtn.disabled = !this.value;
+document.addEventListener('DOMContentLoaded', function() {
+  fetchApplications();
+  setupCustomSelect();
 });
 
-function openApplication() {
-    const app = document.getElementById('appSelector').value;
-    const team = document.getElementById('teamSelector').value;
+function fetchApplications() {
+  fetch('/api/repositories')
+    .then(response => {
+      if (!response.ok) throw new Error('Failed to fetch');
+      return response.json();
+    })
+    .then(data => {
+      applicationsData = Array.isArray(data) ? data : (data.data || []);
+      populateCustomSelect(applicationsData);
+      populateHiddenSelect(applicationsData);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      document.getElementById('selectTrigger').textContent = 'Error loading applications';
+    });
+}
+
+function populateHiddenSelect(apps) {
+  const selector = document.getElementById('appSelector');
+  selector.innerHTML = '<option value="" selected disabled>Choose application</option>';
+  apps.forEach(app => {
+    const option = document.createElement('option');
+    option.value = app.id;
+    option.textContent = app.name;
+    selector.appendChild(option);
+  });
+}
+
+function populateCustomSelect(apps) {
+  const optionsContainer = document.getElementById('selectOptions');
+  optionsContainer.innerHTML = '';
+  
+  apps.forEach(app => {
+    const div = document.createElement('div');
+    div.className = 'option';
+    div.dataset.value = app.id;
+    div.textContent = app.name;
     
-    if (!app) return;
+    // Hover always updates tooltip
+    div.addEventListener('mouseenter', function() {
+      showTooltip(app);
+    });
     
-    let url = appRoutes[app];
+    div.addEventListener('click', function(e) {
+      e.stopPropagation();
+      selectApp(app.id, app.name);
+    });
     
-    // Append team as query param if selected
-    if (team) {
-        url += (url.includes('?') ? '&' : '?') + 'team=' + encodeURIComponent(team);
+    optionsContainer.appendChild(div);
+  });
+}
+
+function setupCustomSelect() {
+  const trigger = document.getElementById('selectTrigger');
+  const options = document.getElementById('selectOptions');
+  
+  trigger.addEventListener('click', function(e) {
+    e.stopPropagation();
+    isDropdownOpen = !isDropdownOpen;
+    options.style.display = isDropdownOpen ? 'block' : 'none';
+    trigger.style.borderColor = isDropdownOpen ? '#004b8d' : '#ccc';
+    
+    // When opening dropdown, show currently selected app or first app
+    if (isDropdownOpen) {
+      if (selectedAppId) {
+        const currentApp = applicationsData.find(a => String(a.id) === selectedAppId);
+        if (currentApp) showTooltip(currentApp);
+      } else if (applicationsData.length > 0) {
+        showTooltip(applicationsData[0]);
+      }
     }
+  });
+  
+  // Click outside handler
+  document.addEventListener('click', function(e) {
+    const wrapper = document.querySelector('.app-selector-wrapper');
     
-    window.location.href = url;
+    // If click is outside the entire wrapper (select + tooltip area)
+    if (!wrapper.contains(e.target)) {
+      // Close dropdown
+      isDropdownOpen = false;
+      options.style.display = 'none';
+      trigger.style.borderColor = '#ccc';
+      
+      // Always hide tooltip when clicking completely outside
+      hideTooltip();
+    }
+  });
+}
+
+function selectApp(appId, appName) {
+  selectedAppId = appId;
+  
+  document.getElementById('selectTrigger').textContent = appName;
+  document.getElementById('appSelector').value = appId;
+  document.getElementById('openAppBtn').disabled = false;
+  
+  const selectedApp = applicationsData.find(a => String(a.id) === appId);
+  if (selectedApp) showTooltip(selectedApp);
+  
+  isDropdownOpen = false;
+  document.getElementById('selectOptions').style.display = 'none';
+  
+  document.querySelectorAll('.custom-select .option').forEach(opt => {
+    opt.classList.toggle('selected', opt.dataset.value === String(appId));
+  });
+}
+
+function showTooltip(app) {
+  const tooltip = document.getElementById('appTooltip');
+  document.getElementById('tooltipName').textContent = app.name || 'Unknown';
+  document.getElementById('tooltipDesc').textContent = truncateText(app.description || 'No description available', 300);
+  
+  let metaHtml = '';
+  if (app.default_owner) metaHtml += `<div style="margin-bottom: 4px;"><i class="fa fa-user" style="color: #004b8d; width: 16px;"></i> ${escapeHtml(app.default_owner)}</div>`;
+  if (app.created_at) metaHtml += `<div style="margin-bottom: 4px;"><i class="fa fa-calendar" style="color: #004b8d; width: 16px;"></i> ${new Date(app.created_at).toLocaleDateString()}</div>`;
+  if (app.node_count !== undefined) metaHtml += `<div><i class="fa fa-sitemap" style="color: #004b8d; width: 16px;"></i> ${app.node_count} entities, ${app.edge_count || 0} edges</div>`;
+  if (app.location) metaHtml += `<div style="margin-top: 6px; font-size: 10px; color: #888; word-break: break-all;"><i class="fa fa-folder" style="color: #004b8d; width: 16px;"></i> ${escapeHtml(app.location)}</div>`;
+  
+  document.getElementById('tooltipMeta').innerHTML = metaHtml;
+  tooltip.style.display = 'block';
+}
+
+function hideTooltip() {
+  document.getElementById('appTooltip').style.display = 'none';
+}
+
+function openApplication() {
+  if (!selectedAppId) return;
+  window.open(`/ui/feast?repo_id=${encodeURIComponent(selectedAppId)}`, '_blank');
+}
+
+function truncateText(text, maxLength) {
+  if (!text || text.length <= maxLength) return text;
+  return text.substring(0, maxLength).trim() + '...';
+}
+
+function escapeHtml(text) {
+  if (!text) return '';
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 </script>
+{% endblock %}
 
-
-
-
-
-
-
-    <div class="text-center p-t-136">
-      <a onclick="" class="txt2" href="./logaticket">
-         Request access/ report an issue
-        <i class="fa fa-long-arrow-right m-l-5" aria-hidden="true"></i>
-      </a>
-    </div>
-  </form>
-
-  {%endblock%} 
-  
-  {% block custom_script %}
-  <script>
-    document.getElementById("dsy-logo").classList.add("rotate");
-    setTimeout(function () {
-      document.getElementById("dsy-logo").classList.remove("rotate");
-    }, 5000);
-  </script>
-
-  <script src="static/js/logTicket.js"></script>
-  {% endblock %}
-
+{% block custom_script %}
+<script>
+  document.getElementById("dsy-logo").classList.add("rotate");
+  setTimeout(function () {
+    document.getElementById("dsy-logo").classList.remove("rotate");
+  }, 5000);
+</script>
+<script src="static/js/logTicket.js"></script>
+{% endblock %}
